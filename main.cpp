@@ -1,5 +1,3 @@
-#include "renderer.h"
-
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
@@ -16,9 +14,7 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
 
-    engine.addImageProvider(QLatin1String("renderer"), new mb::Renderer);
-
-    engine.loadFromModule("qtmandelbrot", "Main");
+    engine.loadFromModule("com.liconaj.qtmandelbrot", "Main");
 
     return QGuiApplication::exec();
 }

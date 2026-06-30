@@ -17,9 +17,12 @@ qt_add_executable(appqtmandelbrot
 )
 
 qt_add_qml_module(appqtmandelbrot
-    URI qtmandelbrot
+    URI com.liconaj.qtmandelbrot
     QML_FILES
         Main.qml
+    SOURCES
+        backend.h
+        backend.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

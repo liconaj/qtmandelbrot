@@ -1,9 +1,5 @@
 #include "renderer.h"
 #include <complex>
-#include <qcontainerfwd.h>
-#include <qlogging.h>
-#include <qpoint.h>
-#include <qrgb.h>
 
 namespace mb {
 
@@ -25,21 +21,18 @@ int escapeTimeIterations(std::complex<double> z0, int maxIterations)
 QImage Renderer::requestImage(const QString& id, QSize* size, const QSize &requestedSize)
 {
     Q_UNUSED(id);
+    Q_UNUSED(requestedSize);
 
-    qDebug("Generating mandelbrot image...");
-
-    const int defaultWidth {1280};
-    const int defaultHeight {900};
-    const int width{requestedSize.width() > 0 ? requestedSize.width() : defaultWidth};
-    const int height{requestedSize.height() > 0 ? requestedSize.height() : defaultHeight};
-    const double zoom{200};
+    const int width{m_parameters.viewportWidth};
+    const int height{m_parameters.viewportHeight};
+    const double zoom{m_parameters.zoom};
 
     // Pixel format must be of 32 bits to ensure aligning
     QImage image(width, height, QImage::Format_ARGB32);
 
     double centerX{static_cast<double>(width) / 2};
     double centerY{static_cast<double>(height) / 2};
-    std::complex<double> zOffset{-0.5, 0.0};
+    std::complex<double> zOffset{m_parameters.centerReal, m_parameters.centerImag};
 
     QRgb* pixels {reinterpret_cast<QRgb*>(image.bits())};
 

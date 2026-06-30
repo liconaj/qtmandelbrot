@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import com.liconaj.qtmandelbrot
 
 ApplicationWindow {
     id: window
@@ -10,32 +11,22 @@ ApplicationWindow {
     visible: true
     title: qsTr("Mandelbrot Explorer")
 
+    Backend {
+        id: backend
+        viewportWidth: viewport.width
+        viewportHeight: viewport.height
+        centerReal: -0.5
+        centerImag: 0
+        zoom: 200
+        maxIterations: 500
+    }
+
     Image {
-        id: mandelbrot
+        id: viewport
         anchors.centerIn: parent
         anchors.fill: parent
         asynchronous: true
-        source: `image://renderer/mandelbrot?w=${mandelbrot.sourceSize.width}&h=${mandelbrot.sourceSize.height}`
+        source: backend.source
         fillMode: Image.PreserveAspectFit
-
-        onWidthChanged: reloadMandelbrot()
-        onHeightChanged: reloadMandelbrot()
-
-        function reloadMandelbrot() {
-            if (throttlingTimer.running) {
-                throttlingTimer.restart();
-            } else {
-                throttlingTimer.start();
-            }
-        }
-
-        Timer {
-            id: throttlingTimer
-            interval: 100
-            onTriggered: {
-                mandelbrot.sourceSize.width = mandelbrot.width
-                mandelbrot.sourceSize.height = mandelbrot.height
-            }       
-        }
     }
 }
