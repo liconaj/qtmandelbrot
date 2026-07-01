@@ -6,12 +6,12 @@ namespace mb {
 
 struct RenderParameters
 {
-    int viewportWidth{1280};
-    int viewportHeight{900};
+    int viewportWidth{640};
+    int viewportHeight{480};
+    int maxIterations{1000};
     double centerReal{-0.5};
     double centerImag{0.0};
-    double zoom{200.0};
-    int maxIterations{1000};
+    double zoom{100.0};
 };
 
 class Renderer : public QQuickImageProvider {
