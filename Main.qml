@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls.Basic
+import QtQuick.Controls.Fusion
 import com.liconaj.qtmandelbrot
 
 ApplicationWindow {
@@ -83,7 +83,7 @@ ApplicationWindow {
                             top: 10000
                         }
 
-                        onAcceptableInputChanged: {
+                        onTextChanged: {
                             backend.viewportWidth = parseInt(text)
                         }
                     }
@@ -99,7 +99,7 @@ ApplicationWindow {
                             top: 10000
                         }
 
-                        onAcceptableInputChanged: {
+                        onTextChanged: {
                             backend.viewportHeight = parseInt(text)
                         }
                     }
@@ -165,7 +165,7 @@ ApplicationWindow {
                         from: -5.0
                         value: backend.centerReal
                         to: 5.0
-                        stepSize: 0.01
+                        stepSize: 1 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
@@ -189,7 +189,7 @@ ApplicationWindow {
                         from: -5.0
                         value: backend.centerImag
                         to: 5.0
-                        stepSize: 0.01
+                        stepSize: 1 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
@@ -218,11 +218,13 @@ ApplicationWindow {
                         from: 100
                         value: backend.zoom
                         to: 2.0e15
-                        stepSize: 100
+                        stepSize: value
                         editable: true
                         decimals: 0
 
-                        onValueChanged: backend.zoom = value
+                        onValueChanged: {
+                            backend.zoom = value
+                        }
                     }
                 }
 
