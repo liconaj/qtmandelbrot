@@ -36,14 +36,14 @@ QImage Renderer::requestImage(const QString& id, QSize* size, const QSize &reque
 
     QRgb* pixels {reinterpret_cast<QRgb*>(image.bits())};
 
-    const int maxIterations {1000};
+    const int maxIterations{m_parameters.maxIterations};
     for (int i{}; i < width * height; ++i) {
         int pixelX{i % width};
         int pixelY{i / width};
 
         double zReal{(static_cast<double>(pixelX) - centerX) / zoom};
         double zImag{(static_cast<double>(pixelY) - centerY) / zoom};
-        std::complex<double> z0{zReal + zOffset.real(), zImag + zOffset.imag()};
+        std::complex<double> z0{zReal + zOffset.real(), zImag - zOffset.imag()};
 
         int iters{escapeTimeIterations(z0, maxIterations)};
 
