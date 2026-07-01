@@ -132,4 +132,14 @@ void Backend::updateSource()
     emit sourceChanged();
 }
 
+void Backend::reset()
+{
+    setViewportWidth(m_defaultParameters.viewportWidth);
+    setViewportHeight(m_defaultParameters.viewportHeight);
+    setMaxIterations(m_defaultParameters.maxIterations);
+    setCenterReal(m_defaultParameters.centerReal);
+    setCenterImag(m_defaultParameters.centerImag);
+    setZoom(m_defaultParameters.zoom);
+}
+
 } // namespace mb

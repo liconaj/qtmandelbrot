@@ -46,6 +46,9 @@ public:
     int viewportHeight() const;
     void setViewportHeight(int newViewportHeight);
 
+    Q_INVOKABLE
+    void reset();
+
 signals:
     void centerRealChanged();
 
@@ -64,6 +67,7 @@ signals:
 private:
     int m_revision{};
 
+    const RenderParameters m_defaultParameters{};
     RenderParameters m_parameters{};
     Renderer *m_renderer;
     QString m_rendererIdentifier;
