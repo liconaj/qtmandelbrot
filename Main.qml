@@ -30,7 +30,7 @@ ApplicationWindow {
 
             Image {
                 anchors.centerIn: parent
-                anchors.fill: scaleImageOutputSize.checked ? parent : null
+                anchors.fill: autoViewportSize.checked ? parent : null
                 id: viewport
                 width: backend.viewportWidth
                 height: backend.viewportHeight
@@ -39,13 +39,13 @@ ApplicationWindow {
                 fillMode: Image.PreserveAspectFit
 
                 onWidthChanged: {
-                    if (scaleImageOutputSize.checked) {
+                    if (autoViewportSize.checked) {
                         backend.viewportWidth = width
                     }
                 }
 
                 onHeightChanged: {
-                    if (scaleImageOutputSize.checked) {
+                    if (autoViewportSize.checked) {
                         backend.viewportHeight = height
                     }
                 }
@@ -63,19 +63,20 @@ ApplicationWindow {
                 anchors.fill: parent
 
                 CheckBox {
-                    id: scaleImageOutputSize
-                    text: "Scale image output size"
+                    id: autoViewportSize
+                    text: "Auto viewport size"
                 }
 
-                GridLayout {
-                    columns: 2
-                    columnSpacing: 8
+                RowLayout {
+                    spacing: 4
+
+                    Label {
+                        text: "W: "
+                    }
 
                     TextField {
-                        enabled: !scaleImageOutputSize.checked
+                        enabled: !autoViewportSize.checked
                         Layout.fillWidth: true
-                        Layout.column: 0
-                        Layout.row: 0
                         text: backend.viewportWidth
 
                         validator: IntValidator {
@@ -83,15 +84,22 @@ ApplicationWindow {
                             top: 10000
                         }
 
-                        onTextChanged: {
+                        onEditingFinished: {
                             backend.viewportWidth = parseInt(text)
                         }
                     }
+
+                    Item {
+                        Layout.preferredWidth: 16
+                    }
+
+                    Label {
+                        text: "H: "
+                    }
+
                     TextField {
-                        enabled: !scaleImageOutputSize.checked
+                        enabled: !autoViewportSize.checked
                         Layout.fillWidth: true
-                        Layout.column: 1
-                        Layout.row: 0
                         text: backend.viewportHeight
 
                         validator: IntValidator {
@@ -99,15 +107,23 @@ ApplicationWindow {
                             top: 10000
                         }
 
-                        onTextChanged: {
+                        onEditingFinished: {
                             backend.viewportHeight = parseInt(text)
                         }
                     }
                 }
 
+                Rectangle {
+                    color: "#555555"
+                    Layout.topMargin: 32
+                    Layout.bottomMargin: 32
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                }
+
+
                 Label {
                     text: "Max iterations"
-                    Layout.topMargin: 20
                 }
 
                 RowLayout {
@@ -127,14 +143,16 @@ ApplicationWindow {
                     TextField {
                         Layout.preferredWidth: 48
                         Layout.fillWidth: false
-                        text: maxIterationsSlider.value
+                        text: backend.maxIterations
                         validator: IntValidator {
                             bottom: maxIterationsSlider.from
                             top: maxIterationsSlider.to
                         }
                         inputMethodHints: Qt.ImhDigitsOnly
-                        onTextChanged: {
-                            maxIterationsSlider.value = parseInt(text)
+                        onEditingFinished: {
+                            if (text) {
+                                backend.maxIterations = parseInt(text)
+                            }
                         }
                     }
                 }
@@ -165,7 +183,7 @@ ApplicationWindow {
                         from: -5.0
                         value: backend.centerReal
                         to: 5.0
-                        stepSize: 1 / zoomSpinBox.value
+                        stepSize: 10 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
@@ -189,7 +207,7 @@ ApplicationWindow {
                         from: -5.0
                         value: backend.centerImag
                         to: 5.0
-                        stepSize: 1 / zoomSpinBox.value
+                        stepSize: 10 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
@@ -197,14 +215,10 @@ ApplicationWindow {
                     }
                 }
 
-
-                Item {
-                    height: 20
-                }
-
                 GridLayout {
                     columns: 2
                     Layout.fillWidth: true
+                    Layout.topMargin: 20
                     Label {
                         Layout.fillWidth: true
                         text: "Zoom: "
@@ -237,7 +251,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     text: "Reset parameters"
                     onClicked: {
-                        scaleImageOutputSize.checked = false
+                        autoViewportSize.checked = false
                         backend.reset()
                     }
                 }
