@@ -23,8 +23,8 @@ QImage Renderer::requestImage(const QString& id, QSize* size, const QSize &reque
     Q_UNUSED(id);
     Q_UNUSED(requestedSize);
 
-    const int width{m_parameters.viewportWidth};
-    const int height{m_parameters.viewportHeight};
+    const int width{m_parameters.renderWidth};
+    const int height{m_parameters.renderHeight};
     const double zoom{m_parameters.zoom};
 
     // Pixel format must be of 32 bits to ensure aligning

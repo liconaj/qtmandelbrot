@@ -12,10 +12,10 @@ namespace mb {
 class Backend : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int viewportWidth READ viewportWidth WRITE setViewportWidth NOTIFY
-                   viewportWidthChanged FINAL)
-    Q_PROPERTY(int viewportHeight READ viewportHeight WRITE setViewportHeight NOTIFY
-                   viewportHeightChanged FINAL)
+    Q_PROPERTY(int renderWidth READ renderWidth WRITE setRenderWidth NOTIFY
+                   renderWidthChanged FINAL)
+    Q_PROPERTY(int renderHeight READ renderHeight WRITE setRenderHeight NOTIFY
+                   renderHeightChanged FINAL)
     Q_PROPERTY(double centerReal READ centerReal WRITE setCenterReal NOTIFY centerRealChanged FINAL)
     Q_PROPERTY(double centerImag READ centerImag WRITE setCenterImag NOTIFY centerImagChanged FINAL)
     Q_PROPERTY(double zoom READ zoom WRITE setZoom NOTIFY zoomChanged FINAL)
@@ -40,11 +40,11 @@ public:
 
     QUrl source() const;
 
-    int viewportWidth() const;
-    void setViewportWidth(int newViewportWidth);
+    int renderWidth() const;
+    void setRenderWidth(int newRenderWidth);
 
-    int viewportHeight() const;
-    void setViewportHeight(int newViewportHeight);
+    int renderHeight() const;
+    void setRenderHeight(int newRenderHeight);
 
     Q_INVOKABLE
     void reset();
@@ -60,9 +60,9 @@ signals:
 
     void sourceChanged();
 
-    void viewportWidthChanged();
+    void renderWidthChanged();
 
-    void viewportHeightChanged();
+    void renderHeightChanged();
 
 private:
     int m_revision{};

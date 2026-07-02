@@ -96,32 +96,32 @@ QUrl Backend::source() const
     return url;
 }
 
-int Backend::viewportWidth() const
+int Backend::renderWidth() const
 {
-    return m_parameters.viewportWidth;
+    return m_parameters.renderWidth;
 }
 
-void Backend::setViewportWidth(int newViewportWidth)
+void Backend::setRenderWidth(int newRenderWidth)
 {
-    if (m_parameters.viewportWidth == newViewportWidth || newViewportWidth == 0)
+    if (m_parameters.renderWidth == newRenderWidth || newRenderWidth == 0)
         return;
-    m_parameters.viewportWidth = newViewportWidth;
-    emit viewportWidthChanged();
+    m_parameters.renderWidth = newRenderWidth;
+    emit renderWidthChanged();
 
     updateSource();
 }
 
-int Backend::viewportHeight() const
+int Backend::renderHeight() const
 {
-    return m_parameters.viewportHeight;
+    return m_parameters.renderHeight;
 }
 
-void Backend::setViewportHeight(int newViewportHeight)
+void Backend::setRenderHeight(int newRenderHeight)
 {
-    if (m_parameters.viewportHeight == newViewportHeight || newViewportHeight == 0)
+    if (m_parameters.renderHeight == newRenderHeight || newRenderHeight == 0)
         return;
-    m_parameters.viewportHeight = newViewportHeight;
-    emit viewportHeightChanged();
+    m_parameters.renderHeight = newRenderHeight;
+    emit renderHeightChanged();
 
     updateSource();
 }
@@ -134,8 +134,8 @@ void Backend::updateSource()
 
 void Backend::reset()
 {
-    setViewportWidth(m_defaultParameters.viewportWidth);
-    setViewportHeight(m_defaultParameters.viewportHeight);
+    setRenderWidth(m_defaultParameters.renderWidth);
+    setRenderHeight(m_defaultParameters.renderHeight);
     setMaxIterations(m_defaultParameters.maxIterations);
     setCenterReal(m_defaultParameters.centerReal);
     setCenterImag(m_defaultParameters.centerImag);

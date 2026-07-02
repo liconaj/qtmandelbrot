@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Fusion
-import com.liconaj.qtmandelbrot
 
 ApplicationWindow {
     id: window
@@ -30,23 +29,23 @@ ApplicationWindow {
 
             Image {
                 anchors.centerIn: parent
-                anchors.fill: autoViewportSize.checked ? parent : null
-                id: viewport
-                width: backend.viewportWidth
-                height: backend.viewportHeight
+                anchors.fill: autoRenderSize.checked ? parent : null
+                id: render
+                width: backend.renderWidth
+                height: backend.renderHeight
                 asynchronous: true
                 source: backend.source
                 fillMode: Image.PreserveAspectFit
 
                 onWidthChanged: {
-                    if (autoViewportSize.checked) {
-                        backend.viewportWidth = width
+                    if (autoRenderSize.checked) {
+                        backend.renderWidth = width
                     }
                 }
 
                 onHeightChanged: {
-                    if (autoViewportSize.checked) {
-                        backend.viewportHeight = height
+                    if (autoRenderSize.checked) {
+                        backend.renderHeight = height
                     }
                 }
             }
@@ -63,8 +62,8 @@ ApplicationWindow {
                 anchors.fill: parent
 
                 CheckBox {
-                    id: autoViewportSize
-                    text: "Auto viewport size"
+                    id: autoRenderSize
+                    text: "Auto render size"
                 }
 
                 RowLayout {
@@ -75,9 +74,9 @@ ApplicationWindow {
                     }
 
                     TextField {
-                        enabled: !autoViewportSize.checked
+                        enabled: !autoRenderSize.checked
                         Layout.fillWidth: true
-                        text: backend.viewportWidth
+                        text: backend.renderWidth
 
                         validator: IntValidator {
                             bottom: 50
@@ -85,7 +84,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            backend.viewportWidth = parseInt(text)
+                            backend.renderWidth = parseInt(text)
                         }
                     }
 
@@ -98,9 +97,9 @@ ApplicationWindow {
                     }
 
                     TextField {
-                        enabled: !autoViewportSize.checked
+                        enabled: !autoRenderSize.checked
                         Layout.fillWidth: true
-                        text: backend.viewportHeight
+                        text: backend.renderHeight
 
                         validator: IntValidator {
                             bottom: 50
@@ -108,7 +107,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            backend.viewportHeight = parseInt(text)
+                            backend.renderHeight = parseInt(text)
                         }
                     }
                 }
@@ -116,7 +115,7 @@ ApplicationWindow {
                 Rectangle {
                     color: "#555555"
                     Layout.topMargin: 32
-                    Layout.bottomMargin: 32
+                    Layout.bottomMargin: 20
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
                 }
@@ -251,7 +250,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     text: "Reset parameters"
                     onClicked: {
-                        autoViewportSize.checked = false
+                        autoRenderSize.checked = false
                         backend.reset()
                     }
                 }

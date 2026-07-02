@@ -6,8 +6,8 @@ namespace mb {
 
 struct RenderParameters
 {
-    int viewportWidth{640};
-    int viewportHeight{480};
+    int renderWidth{640};
+    int renderHeight{480};
     int maxIterations{1000};
     double centerReal{-0.5};
     double centerImag{0.0};
