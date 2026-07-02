@@ -231,7 +231,7 @@ ApplicationWindow {
                         from: 100
                         value: backend.zoom
                         to: 2.0e15
-                        stepSize: value
+                        stepSize: 100
                         editable: true
                         decimals: 0
 
