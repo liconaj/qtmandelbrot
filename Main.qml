@@ -1,11 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Fusion
+import com.liconaj.qtmandelbrot
 
 ApplicationWindow {
     id: window
-    minimumWidth: 1100
-    minimumHeight: 600
+    minimumWidth: 940
+    minimumHeight: 480
     width: minimumWidth
     height: minimumHeight
     visible: true
@@ -29,25 +30,13 @@ ApplicationWindow {
 
             Image {
                 anchors.centerIn: parent
-                anchors.fill: autoRenderSize.checked ? parent : null
+                anchors.fill: parent
                 id: render
                 width: backend.renderWidth
                 height: backend.renderHeight
                 asynchronous: true
                 source: backend.source
                 fillMode: Image.PreserveAspectFit
-
-                onWidthChanged: {
-                    if (autoRenderSize.checked) {
-                        backend.renderWidth = width
-                    }
-                }
-
-                onHeightChanged: {
-                    if (autoRenderSize.checked) {
-                        backend.renderHeight = height
-                    }
-                }
             }
         }
 
@@ -61,22 +50,22 @@ ApplicationWindow {
             ColumnLayout {
                 anchors.fill: parent
 
-                CheckBox {
-                    id: autoRenderSize
-                    text: "Auto render size"
+                Label {
+                    text: "View render size"
                 }
 
                 RowLayout {
                     spacing: 4
 
                     Label {
-                        text: "W: "
+                        text: "Width: "
                     }
 
                     TextField {
-                        enabled: !autoRenderSize.checked
                         Layout.fillWidth: true
                         text: backend.renderWidth
+                        horizontalAlignment: Qt.AlignHCenter
+                        rightPadding: trailingElement1.width + 12
 
                         validator: IntValidator {
                             bottom: 50
@@ -86,6 +75,15 @@ ApplicationWindow {
                         onEditingFinished: {
                             backend.renderWidth = parseInt(text)
                         }
+
+                        Label {
+                            id: trailingElement1
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.rightMargin: 8
+                            anchors.right: parent.right
+                            opacity: 0.5
+                            text: "px"
+                        }
                     }
 
                     Item {
@@ -93,13 +91,14 @@ ApplicationWindow {
                     }
 
                     Label {
-                        text: "H: "
+                        text: "Height: "
                     }
 
                     TextField {
-                        enabled: !autoRenderSize.checked
                         Layout.fillWidth: true
                         text: backend.renderHeight
+                        horizontalAlignment: Qt.AlignHCenter
+                        rightPadding: trailingElement2.width + 12
 
                         validator: IntValidator {
                             bottom: 50
@@ -109,19 +108,20 @@ ApplicationWindow {
                         onEditingFinished: {
                             backend.renderHeight = parseInt(text)
                         }
+
+                        Label {
+                            id: trailingElement2
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.rightMargin: 8
+                            anchors.right: parent.right
+                            opacity: 0.5
+                            text: "px"
+                        }
                     }
                 }
 
-                Rectangle {
-                    color: "#555555"
-                    Layout.topMargin: 32
-                    Layout.bottomMargin: 20
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
-                }
-
-
                 Label {
+                    Layout.topMargin: 20
                     text: "Max iterations"
                 }
 
@@ -249,10 +249,7 @@ ApplicationWindow {
                 Button {
                     Layout.fillWidth: true
                     text: "Reset parameters"
-                    onClicked: {
-                        autoRenderSize.checked = false
-                        backend.reset()
-                    }
+                    onClicked: backend.reset()
                 }
 
             }
