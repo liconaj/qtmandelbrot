@@ -12,8 +12,25 @@ ApplicationWindow {
     visible: true
     title: qsTr("Mandelbrot Explorer")
 
-    Backend {
-        id: backend
+    QtObject {
+       id: parameters
+       property int renderWidth
+       property int renderHeight
+       property double zoom
+       property double centerRe
+       property double centerIm
+       property int maxIterations
+
+       Component.onCompleted: reset()
+
+       function reset() {
+           zoom = 100;
+           renderWidth = 640;
+           renderHeight = 450;
+           centerRe = -0.5;
+           centerIm = 0;
+           maxIterations = 100;
+       }
     }
 
     RowLayout {
@@ -28,15 +45,17 @@ ApplicationWindow {
                 color: "#222222"
             }
 
-            Image {
+            MandelbrotRenderer {
+                id: renderer
+                visible: true
                 anchors.centerIn: parent
                 anchors.fill: parent
-                id: render
-                width: backend.renderWidth
-                height: backend.renderHeight
-                asynchronous: true
-                source: backend.source
-                fillMode: Image.PreserveAspectFit
+                renderWidth: parameters.renderWidth
+                renderHeight: parameters.renderHeight
+                zoom: parameters.zoom
+                maxIterations: parameters.maxIterations
+                centerRe: parameters.centerRe
+                centerIm: parameters.centerIm
             }
         }
 
@@ -63,7 +82,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: backend.renderWidth
+                        text: parameters.renderWidth
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement1.width + 12
 
@@ -73,7 +92,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            backend.renderWidth = parseInt(text)
+                            parameters.renderWidth = parseInt(text)
                         }
 
                         Label {
@@ -96,7 +115,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: backend.renderHeight
+                        text: parameters.renderHeight
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement2.width + 12
 
@@ -106,7 +125,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            backend.renderHeight = parseInt(text)
+                            parameters.renderHeight = parseInt(text)
                         }
 
                         Label {
@@ -132,17 +151,17 @@ ApplicationWindow {
                         Layout.fillWidth: true
 
                         from: 1
-                        value: backend.maxIterations
+                        value: parameters.maxIterations
                         to: 1500
                         stepSize: 1
 
-                        onValueChanged: backend.maxIterations = value
+                        onMoved: parameters.maxIterations = value
                     }
 
                     TextField {
                         Layout.preferredWidth: 48
                         Layout.fillWidth: false
-                        text: backend.maxIterations
+                        text: parameters.maxIterations
                         validator: IntValidator {
                             bottom: maxIterationsSlider.from
                             top: maxIterationsSlider.to
@@ -150,7 +169,7 @@ ApplicationWindow {
                         inputMethodHints: Qt.ImhDigitsOnly
                         onEditingFinished: {
                             if (text) {
-                                backend.maxIterations = parseInt(text)
+                                parameters.maxIterations = parseInt(text)
                             }
                         }
                     }
@@ -180,13 +199,15 @@ ApplicationWindow {
 
                         locale: Qt.locale("es_US")
                         from: -5.0
-                        value: backend.centerReal
+                        value: parameters.centerRe
                         to: 5.0
                         stepSize: 10 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
-                        onValueChanged: backend.centerReal = value
+                        onValueModified: {
+                            parameters.centerRe = value
+                        }
                     }
 
                     Label {
@@ -204,13 +225,15 @@ ApplicationWindow {
 
                         locale: Qt.locale("es_US")
                         from: -5.0
-                        value: backend.centerImag
+                        value: parameters.centerIm
                         to: 5.0
                         stepSize: 10 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
-                        onValueChanged: backend.centerImag = value
+                        onValueModified: {
+                            parameters.centerIm = value
+                        }
                     }
                 }
 
@@ -229,14 +252,14 @@ ApplicationWindow {
 
                         locale: Qt.locale("es_US")
                         from: 100
-                        value: backend.zoom
+                        value: parameters.zoom
                         to: 2.0e15
                         stepSize: 100
                         editable: true
                         decimals: 0
 
-                        onValueChanged: {
-                            backend.zoom = value
+                        onValueModified: {
+                            parameters.zoom = value
                         }
                     }
                 }
@@ -249,9 +272,8 @@ ApplicationWindow {
                 Button {
                     Layout.fillWidth: true
                     text: "Reset parameters"
-                    onClicked: backend.reset()
+                    onClicked: parameters.reset()
                 }
-
             }
         }
     }
