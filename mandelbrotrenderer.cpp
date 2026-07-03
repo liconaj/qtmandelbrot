@@ -121,7 +121,8 @@ void MandelbrotRenderer::renderOnCpu(QPromise<QImage> &promise)
     const int renderHeight{m_renderHeight};
     const double centerRe{m_centerRe};
     const double centerIm{m_centerIm};
-    const double zoom{m_zoom};
+    // Normalize zoom to make it render width independent
+    const double zoom{(m_renderWidth / 8.0) * (m_zoom / 100.0)};
     const int maxIterations{m_maxIterations};
 
     // Pixel format must be of 32 bits to ensure aligning of rows
