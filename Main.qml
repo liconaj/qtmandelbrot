@@ -25,8 +25,8 @@ ApplicationWindow {
 
        function reset() {
            zoom = 100;
-           renderWidth = 640;
-           renderHeight = 450;
+           renderWidth = 800;
+           renderHeight = 600;
            centerRe = -0.5;
            centerIm = 0;
            maxIterations = 100;
