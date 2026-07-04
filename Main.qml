@@ -10,7 +10,7 @@ ApplicationWindow {
     width: minimumWidth
     height: minimumHeight
     visible: true
-    title: qsTr("Mandelbrot Explorer")
+    title: qsTr("Mandelbrot Set Explorer")
 
     QtObject {
        id: parameters
