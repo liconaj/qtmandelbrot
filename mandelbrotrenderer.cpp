@@ -155,13 +155,11 @@ void MandelbrotRenderer::renderOnCpu(QPromise<QImage> &promise)
             int iters{escapeTimeIterations(z0, maxIterations)};
 
             if (iters < maxIterations) {
-                // Use componente with prime numbers for uniqueness
-                const int r{iters * 7};
-                const int g{iters * 13};
-                const int b{iters * 21};
-                // Components are wrapped around the number 256 by qRgb
-                // this is a simple procedurally wrapped color mapping
-                row[pixelX] = qRgb(r, g, b);
+                int h{static_cast<int>(std::pow(360.0 * iters / maxIterations, 1.5)) % 360};
+                int s{255}; // 100%
+                int l{static_cast<int>(100)};
+                QColor color{QColor::fromHsl(h, s, l)};
+                row[pixelX] = color.rgba();
             } else {
                 row[pixelX] = qRgb(0, 0, 0);
             }
@@ -217,6 +215,7 @@ QSGNode *MandelbrotRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeDa
     node->setRect(0, 0, width(), height());
 
     QSGTexture *texture{window()->createTextureFromImage(m_cpuImage)};
+    texture->setFiltering(QSGTexture::Linear);
     node->setOwnsTexture(true);
     node->setTexture(texture);
 
