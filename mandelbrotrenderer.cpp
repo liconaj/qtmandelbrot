@@ -210,7 +210,8 @@ QSGNode *MandelbrotRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeDa
     }
 
     if (m_cpuImage.isNull()) {
-        return node;
+        delete node;
+        return nullptr;
     }
 
     node->setRect(0, 0, width(), height());
