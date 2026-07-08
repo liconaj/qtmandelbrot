@@ -29,31 +29,31 @@ Mandelbrot::Mandelbrot(QQuickItem *parent)
     setFlag(QQuickItem::ItemHasContents);
 }
 
-int Mandelbrot::renderWidth() const
+int Mandelbrot::imageWidth() const
 {
-    return m_renderWidth;
+    return m_imageWidth;
 }
 
-void Mandelbrot::setRenderWidth(int newRenderWidth)
+void Mandelbrot::setImageWidth(int newImageWidth)
 {
-    if (m_renderWidth == newRenderWidth)
+    if (m_imageWidth == newImageWidth)
         return;
-    m_renderWidth = newRenderWidth;
-    emit renderWidthChanged();
+    m_imageWidth = newImageWidth;
+    emit imageWidthChanged();
     startRendering();
 }
 
-int Mandelbrot::renderHeight() const
+int Mandelbrot::imageHeight() const
 {
-    return m_renderHeight;
+    return m_imageHeight;
 }
 
-void Mandelbrot::setRenderHeight(int newRenderHeight)
+void Mandelbrot::setImageHeight(int newImageHeight)
 {
-    if (m_renderHeight == newRenderHeight)
+    if (m_imageHeight == newImageHeight)
         return;
-    m_renderHeight = newRenderHeight;
-    emit renderHeightChanged();
+    m_imageHeight = newImageHeight;
+    emit imageHeightChanged();
     startRendering();
 }
 
@@ -117,28 +117,28 @@ void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
 {
     // Make constant copies of parameters to avoid passing pointer of this
     // to concurrent lambda
-    const int renderWidth{m_renderWidth};
-    const int renderHeight{m_renderHeight};
+    const int imageWidth{m_imageWidth};
+    const int imageHeight{m_imageHeight};
     const double centerRe{m_centerRe};
     const double centerIm{m_centerIm};
     // Normalize zoom to make it render width independent
-    const double zoom{(m_renderWidth / 8.0) * (m_zoom / 100.0)};
+    const double zoom{(m_imageWidth / 8.0) * (m_zoom / 100.0)};
     const int maxIterations{m_maxIterations};
 
     // Pixel format must be of 32 bits to ensure aligning of rows
-    QImage image{renderWidth, renderHeight, QImage::Format_ARGB32};
+    QImage image{imageWidth, imageHeight, QImage::Format_ARGB32};
     QRgb *pixels{reinterpret_cast<QRgb *>(image.bits())};
 
-    double centerX{static_cast<double>(renderWidth) / 2.0};
-    double centerY{static_cast<double>(renderHeight) / 2.0};
+    double centerX{static_cast<double>(imageWidth) / 2.0};
+    double centerY{static_cast<double>(imageHeight) / 2.0};
 
     std::complex<double> center{centerRe, centerIm};
 
     // Make a list of row indeces to map across threads
     // size of image is not known at compile time so it this list must be dynamic
     QList<int> rowIndices;
-    rowIndices.reserve(renderHeight);
-    for (int i{}; i < renderHeight; ++i) {
+    rowIndices.reserve(imageHeight);
+    for (int i{}; i < imageHeight; ++i) {
         rowIndices.append(i);
     }
 
@@ -146,8 +146,8 @@ void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
         if (promise.isCanceled()) {
             return;
         }
-        QRgb *row{pixels + (pixelY * renderWidth)};
-        for (int pixelX{}; pixelX < renderWidth; ++pixelX) {
+        QRgb *row{pixels + (pixelY * imageWidth)};
+        for (int pixelX{}; pixelX < imageWidth; ++pixelX) {
             double zRe{static_cast<double>(pixelX - centerX) / zoom};
             double zIm{static_cast<double>(pixelY - centerY) / zoom};
             std::complex<double> z0{zRe + center.real(), zIm - center.imag()};
@@ -173,7 +173,7 @@ void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
 
 void Mandelbrot::startRendering()
 {
-    if (m_renderWidth == 0 || m_renderHeight == 0 || m_zoom == 0 || m_maxIterations == 0) {
+    if (m_imageWidth == 0 || m_imageHeight == 0 || m_zoom == 0 || m_maxIterations == 0) {
         return;
     }
 
@@ -203,7 +203,7 @@ QSGNode *Mandelbrot::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node = new QSGSimpleTextureNode();
     }
 
-    if (m_renderWidth <= 0 || m_renderHeight <= 0) {
+    if (m_imageWidth <= 0 || m_imageHeight <= 0) {
         return node;
     }
 

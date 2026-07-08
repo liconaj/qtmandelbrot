@@ -14,8 +14,8 @@ ApplicationWindow {
 
     QtObject {
        id: parameters
-       property int renderWidth
-       property int renderHeight
+       property int imageWidth
+       property int imageHeight
        property double zoom
        property double centerRe
        property double centerIm
@@ -25,8 +25,8 @@ ApplicationWindow {
 
        function reset() {
            zoom = 100;
-           renderWidth = 800;
-           renderHeight = 600;
+           imageWidth = 800;
+           imageHeight = 600;
            centerRe = -0.5;
            centerIm = 0;
            maxIterations = 100;
@@ -50,8 +50,8 @@ ApplicationWindow {
                 visible: true
                 anchors.centerIn: parent
                 anchors.fill: parent
-                renderWidth: parameters.renderWidth
-                renderHeight: parameters.renderHeight
+                imageWidth: parameters.imageWidth
+                imageHeight: parameters.imageHeight
                 zoom: parameters.zoom
                 maxIterations: parameters.maxIterations
                 centerRe: parameters.centerRe
@@ -82,7 +82,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: parameters.renderWidth
+                        text: parameters.imageWidth
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement1.width + 12
 
@@ -92,7 +92,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            parameters.renderWidth = parseInt(text)
+                            parameters.imageWidth = parseInt(text)
                         }
 
                         Label {
@@ -115,7 +115,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: parameters.renderHeight
+                        text: parameters.imageHeight
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement2.width + 12
 
@@ -125,7 +125,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            parameters.renderHeight = parseInt(text)
+                            parameters.imageHeight = parseInt(text)
                         }
 
                         Label {

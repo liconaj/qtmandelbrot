@@ -6,13 +6,22 @@
 
 namespace mb {
 
+struct Parameters
+{
+    unsigned int width;
+    unsigned int height;
+    double centerRe;
+    double centerIm;
+    double zoom;
+    unsigned int maxIterations;
+};
+
 class Mandelbrot : public QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(int renderWidth READ renderWidth WRITE setRenderWidth NOTIFY renderWidthChanged FINAL)
-    Q_PROPERTY(
-        int renderHeight READ renderHeight WRITE setRenderHeight NOTIFY renderHeightChanged FINAL)
+    Q_PROPERTY(int imageWidth READ imageWidth WRITE setImageWidth NOTIFY imageWidthChanged FINAL)
+    Q_PROPERTY(int imageHeight READ imageHeight WRITE setImageHeight NOTIFY imageHeightChanged FINAL)
     Q_PROPERTY(double centerRe READ centerRe WRITE setCenterRe NOTIFY centerReChanged FINAL)
     Q_PROPERTY(double centerIm READ centerIm WRITE setCenterIm NOTIFY centerImChanged FINAL)
     Q_PROPERTY(double zoom READ zoom WRITE setZoom NOTIFY zoomChanged FINAL)
@@ -21,11 +30,11 @@ class Mandelbrot : public QQuickItem
 public:
     explicit Mandelbrot(QQuickItem *parent = nullptr);
 
-    int renderWidth() const;
-    void setRenderWidth(int newRenderWidth);
+    int imageWidth() const;
+    void setImageWidth(int newImageWidth);
 
-    int renderHeight() const;
-    void setRenderHeight(int newRenderHeight);
+    int imageHeight() const;
+    void setImageHeight(int newImageHeight);
 
     double centerRe() const;
     void setCenterRe(double newCenterRe);
@@ -43,9 +52,9 @@ public:
     void startRendering();
 
 signals:
-    void renderWidthChanged();
+    void imageWidthChanged();
 
-    void renderHeightChanged();
+    void imageHeightChanged();
 
     void centerReChanged();
 
@@ -58,8 +67,8 @@ signals:
 private:
     void renderOnCpu(QPromise<QImage> &promise);
 
-    int m_renderWidth;
-    int m_renderHeight;
+    int m_imageWidth;
+    int m_imageHeight;
     double m_centerRe;
     double m_centerIm;
     double m_zoom;
