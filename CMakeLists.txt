@@ -21,8 +21,8 @@ qt_add_qml_module(appqtmandelbrot
     QML_FILES
         Main.qml
     SOURCES
-        mandelbrotrenderer.h
-        mandelbrotrenderer.cpp
+    mandelbrot.h
+        mandelbrot.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -6,7 +6,7 @@
 
 namespace mb {
 
-class MandelbrotRenderer : public QQuickItem
+class Mandelbrot : public QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
@@ -19,7 +19,7 @@ class MandelbrotRenderer : public QQuickItem
     Q_PROPERTY(int maxIterations READ maxIterations WRITE setMaxIterations NOTIFY
                    maxIterationsChanged FINAL)
 public:
-    explicit MandelbrotRenderer(QQuickItem *parent = nullptr);
+    explicit Mandelbrot(QQuickItem *parent = nullptr);
 
     int renderWidth() const;
     void setRenderWidth(int newRenderWidth);

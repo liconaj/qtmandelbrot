@@ -1,4 +1,4 @@
-#include "mandelbrotrenderer.h"
+#include "mandelbrot.h"
 
 #include <QList>
 #include <QSGSimpleTextureNode>
@@ -23,18 +23,18 @@ int escapeTimeIterations(std::complex<double> z0, int maxIterations)
 
 } // namespace
 
-MandelbrotRenderer::MandelbrotRenderer(QQuickItem *parent)
+Mandelbrot::Mandelbrot(QQuickItem *parent)
     : QQuickItem(parent)
 {
     setFlag(QQuickItem::ItemHasContents);
 }
 
-int MandelbrotRenderer::renderWidth() const
+int Mandelbrot::renderWidth() const
 {
     return m_renderWidth;
 }
 
-void MandelbrotRenderer::setRenderWidth(int newRenderWidth)
+void Mandelbrot::setRenderWidth(int newRenderWidth)
 {
     if (m_renderWidth == newRenderWidth)
         return;
@@ -43,12 +43,12 @@ void MandelbrotRenderer::setRenderWidth(int newRenderWidth)
     startRendering();
 }
 
-int MandelbrotRenderer::renderHeight() const
+int Mandelbrot::renderHeight() const
 {
     return m_renderHeight;
 }
 
-void MandelbrotRenderer::setRenderHeight(int newRenderHeight)
+void Mandelbrot::setRenderHeight(int newRenderHeight)
 {
     if (m_renderHeight == newRenderHeight)
         return;
@@ -57,12 +57,12 @@ void MandelbrotRenderer::setRenderHeight(int newRenderHeight)
     startRendering();
 }
 
-double MandelbrotRenderer::centerRe() const
+double Mandelbrot::centerRe() const
 {
     return m_centerRe;
 }
 
-void MandelbrotRenderer::setCenterRe(double newCenterRe)
+void Mandelbrot::setCenterRe(double newCenterRe)
 {
     if (qFuzzyCompare(m_centerRe, newCenterRe))
         return;
@@ -71,12 +71,12 @@ void MandelbrotRenderer::setCenterRe(double newCenterRe)
     startRendering();
 }
 
-double MandelbrotRenderer::centerIm() const
+double Mandelbrot::centerIm() const
 {
     return m_centerIm;
 }
 
-void MandelbrotRenderer::setCenterIm(double newCenterIm)
+void Mandelbrot::setCenterIm(double newCenterIm)
 {
     if (qFuzzyCompare(m_centerIm, newCenterIm))
         return;
@@ -85,12 +85,12 @@ void MandelbrotRenderer::setCenterIm(double newCenterIm)
     startRendering();
 }
 
-double MandelbrotRenderer::zoom() const
+double Mandelbrot::zoom() const
 {
     return m_zoom;
 }
 
-void MandelbrotRenderer::setZoom(double newZoom)
+void Mandelbrot::setZoom(double newZoom)
 {
     if (qFuzzyCompare(m_zoom, newZoom))
         return;
@@ -99,12 +99,12 @@ void MandelbrotRenderer::setZoom(double newZoom)
     startRendering();
 }
 
-int MandelbrotRenderer::maxIterations() const
+int Mandelbrot::maxIterations() const
 {
     return m_maxIterations;
 }
 
-void MandelbrotRenderer::setMaxIterations(int newMaxIterations)
+void Mandelbrot::setMaxIterations(int newMaxIterations)
 {
     if (m_maxIterations == newMaxIterations)
         return;
@@ -113,7 +113,7 @@ void MandelbrotRenderer::setMaxIterations(int newMaxIterations)
     startRendering();
 }
 
-void MandelbrotRenderer::renderOnCpu(QPromise<QImage> &promise)
+void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
 {
     // Make constant copies of parameters to avoid passing pointer of this
     // to concurrent lambda
@@ -171,7 +171,7 @@ void MandelbrotRenderer::renderOnCpu(QPromise<QImage> &promise)
     }
 }
 
-void MandelbrotRenderer::startRendering()
+void Mandelbrot::startRendering()
 {
     if (m_renderWidth == 0 || m_renderHeight == 0 || m_zoom == 0 || m_maxIterations == 0) {
         return;
@@ -192,11 +192,11 @@ void MandelbrotRenderer::startRendering()
         }
     });
 
-    QFuture<QImage> future{QtConcurrent::run(&MandelbrotRenderer::renderOnCpu, this)};
+    QFuture<QImage> future{QtConcurrent::run(&Mandelbrot::renderOnCpu, this)};
     m_renderWatcher.setFuture(future);
 }
 
-QSGNode *MandelbrotRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
+QSGNode *Mandelbrot::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
     auto node{static_cast<QSGSimpleTextureNode *>(oldNode)};
     if (!node) {

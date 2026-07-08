@@ -45,8 +45,8 @@ ApplicationWindow {
                 color: "#222222"
             }
 
-            MandelbrotRenderer {
-                id: renderer
+            Mandelbrot {
+                id: mandelbrot
                 visible: true
                 anchors.centerIn: parent
                 anchors.fill: parent
