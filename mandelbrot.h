@@ -15,6 +15,12 @@ struct Parameters
     int maxIterations;
 };
 
+struct EscapeResult
+{
+    int iterations;
+    double smoothIterations;
+};
+
 struct IterationHistogram
 {
     int total;
@@ -41,11 +47,11 @@ public:
 
     std::size_t indexOf(int x, int y) const { return x + (m_imageSize.width() * y); }
 
-    int &at(int index) { return m_buffer[index]; }
-    const int &at(int index) const { return m_buffer[index]; }
+    EscapeResult &at(int index) { return m_buffer[index]; }
+    const EscapeResult &at(int index) const { return m_buffer[index]; }
 
-    int &at(int x, int y) { return m_buffer[indexOf(x, y)]; }
-    const int &at(int x, int y) const { return m_buffer[indexOf(x, y)]; }
+    EscapeResult &at(int x, int y) { return m_buffer[indexOf(x, y)]; }
+    const EscapeResult &at(int x, int y) const { return m_buffer[indexOf(x, y)]; }
 
     int maxIterations() const { return m_maxIterations; }
     void setMaxIterations(int newMaxIterations) { m_maxIterations = newMaxIterations; }
@@ -61,7 +67,9 @@ public:
 
 private:
     QSize m_imageSize;
-    QVector<int> m_buffer;
+
+    QVector<EscapeResult> m_buffer;
+
     int m_maxIterations;
 };
 

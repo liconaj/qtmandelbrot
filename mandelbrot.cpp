@@ -4,21 +4,26 @@
 #include <QSGSimpleTextureNode>
 #include <QSGTexture>
 #include <QtConcurrent>
+#include <cmath>
 #include <complex>
 
 namespace mb {
 
 namespace {
 
-int escapeTimeIterations(std::complex<double> z0, int maxIterations)
+EscapeResult computeEscapeTimeIterations(std::complex<double> z0, int maxIterations)
 {
     std::complex<double> z{z0};
     int iterations{};
+    double smoothIterations{-1};
     while ((z.real() * z.real()) + (z.imag() * z.imag()) <= 4 && iterations < maxIterations) {
         z = (z * z) + z0;
         ++iterations;
     }
-    return iterations;
+    if (iterations < maxIterations) {
+        smoothIterations = iterations + 1 - std::log(std::log(std::abs(z))) / std::log(2.0);
+    }
+    return {.iterations = iterations, .smoothIterations = smoothIterations};
 }
 
 void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &parameters)
@@ -52,7 +57,7 @@ void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &par
             double zIm{static_cast<double>(pixelY - centerY) / normalizedZoom};
             std::complex<double> z0{zRe + parameters.centerRe, zIm - parameters.centerIm};
 
-            int iters{escapeTimeIterations(z0, parameters.maxIterations)};
+            EscapeResult iters{computeEscapeTimeIterations(z0, parameters.maxIterations)};
             iterationBuffer.at(pixelX, pixelY) = iters;
         }
     });
@@ -68,9 +73,9 @@ IterationHistogram computeHistogram(const IterationBuffer &iterationBuffer)
     QVector<int> frequencies(iterationBuffer.maxIterations());
     QVector<int> cumulativeFrequencies(iterationBuffer.maxIterations());
 
-    for (const int &it : iterationBuffer) {
-        if (it < iterationBuffer.maxIterations()) {
-            ++frequencies[it];
+    for (const EscapeResult &escapeResult : iterationBuffer) {
+        if (escapeResult.iterations < iterationBuffer.maxIterations()) {
+            ++frequencies[escapeResult.iterations];
             ++total;
         }
     }
@@ -94,11 +99,12 @@ QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &hist
     QRgb *pixels{reinterpret_cast<QRgb *>(image.bits())};
 
     for (int i{}; i < buffer.size(); ++i) {
-        const int iterations{buffer.at(i)};
+        const EscapeResult escapeResult{buffer.at(i)};
 
-        if (iterations < buffer.maxIterations()) {
-            const double value{static_cast<double>(histogram.cumulativeFrequencies.at(iterations))
-                               / histogram.total};
+        if (escapeResult.iterations < buffer.maxIterations()) {
+            const double value{
+                static_cast<double>(histogram.cumulativeFrequencies.at(escapeResult.iterations))
+                / histogram.total};
             int h{static_cast<int>(std::pow(360 * value, 1.5)) % 360};
             int s{200};
             int l{static_cast<int>(100)};
