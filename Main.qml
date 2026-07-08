@@ -14,8 +14,7 @@ ApplicationWindow {
 
     QtObject {
        id: defaultParameters
-       readonly property int imageWidth: 800
-       readonly property int imageHeight: 600
+       readonly property size imageSize: Qt.size(800, 600)
        readonly property double centerRe: -0.5
        readonly property double centerIm: 0
        readonly property double zoom: 100
@@ -39,16 +38,14 @@ ApplicationWindow {
                 visible: true
                 anchors.centerIn: parent
                 anchors.fill: parent
-                imageWidth: defaultParameters.imageWidth
-                imageHeight: defaultParameters.imageHeight
+                imageSize: defaultParameters.imageSize
                 zoom: defaultParameters.zoom
                 maxIterations: defaultParameters.maxIterations
                 centerRe: defaultParameters.centerRe
                 centerIm: defaultParameters.centerIm
 
                 function reset() {
-                    imageWidth = defaultParameters.imageWidth
-                    imageHeight = defaultParameters.imageHeight
+                    imageSize = defaultParameters.imageSize
                     zoom = defaultParameters.zoom
                     maxIterations = defaultParameters.maxIterations
                     centerRe = defaultParameters.centerRe
@@ -80,7 +77,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: mandelbrot.imageWidth
+                        text: mandelbrot.imageSize.width
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement1.width + 12
 
@@ -90,7 +87,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            mandelbrot.imageWidth = parseInt(text)
+                            mandelbrot.imageSize.width = parseInt(text)
                         }
 
                         Label {
@@ -113,7 +110,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: mandelbrot.imageHeight
+                        text: mandelbrot.imageSize.height
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement2.width + 12
 
@@ -123,7 +120,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            mandelbrot.imageHeight = parseInt(text)
+                            mandelbrot.imageSize.height = parseInt(text)
                         }
 
                         Label {
