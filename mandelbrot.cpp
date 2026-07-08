@@ -31,114 +31,108 @@ Mandelbrot::Mandelbrot(QQuickItem *parent)
 
 int Mandelbrot::imageWidth() const
 {
-    return m_imageWidth;
+    return m_parameters.imageWidth;
 }
 
 void Mandelbrot::setImageWidth(int newImageWidth)
 {
-    if (m_imageWidth == newImageWidth)
+    if (m_parameters.imageWidth == newImageWidth)
         return;
-    m_imageWidth = newImageWidth;
+    m_parameters.imageWidth = newImageWidth;
     emit imageWidthChanged();
     startRendering();
 }
 
 int Mandelbrot::imageHeight() const
 {
-    return m_imageHeight;
+    return m_parameters.imageHeight;
 }
 
 void Mandelbrot::setImageHeight(int newImageHeight)
 {
-    if (m_imageHeight == newImageHeight)
+    if (m_parameters.imageHeight == newImageHeight)
         return;
-    m_imageHeight = newImageHeight;
+    m_parameters.imageHeight = newImageHeight;
     emit imageHeightChanged();
     startRendering();
 }
 
 double Mandelbrot::centerRe() const
 {
-    return m_centerRe;
+    return m_parameters.centerRe;
 }
 
 void Mandelbrot::setCenterRe(double newCenterRe)
 {
-    if (qFuzzyCompare(m_centerRe, newCenterRe))
+    if (qFuzzyCompare(m_parameters.centerRe, newCenterRe))
         return;
-    m_centerRe = newCenterRe;
+    m_parameters.centerRe = newCenterRe;
     emit centerReChanged();
     startRendering();
 }
 
 double Mandelbrot::centerIm() const
 {
-    return m_centerIm;
+    return m_parameters.centerIm;
 }
 
 void Mandelbrot::setCenterIm(double newCenterIm)
 {
-    if (qFuzzyCompare(m_centerIm, newCenterIm))
+    if (qFuzzyCompare(m_parameters.centerIm, newCenterIm))
         return;
-    m_centerIm = newCenterIm;
+    m_parameters.centerIm = newCenterIm;
     emit centerImChanged();
     startRendering();
 }
 
 double Mandelbrot::zoom() const
 {
-    return m_zoom;
+    return m_parameters.zoom;
 }
 
 void Mandelbrot::setZoom(double newZoom)
 {
-    if (qFuzzyCompare(m_zoom, newZoom))
+    if (qFuzzyCompare(m_parameters.zoom, newZoom))
         return;
-    m_zoom = newZoom;
+    m_parameters.zoom = newZoom;
     emit zoomChanged();
     startRendering();
 }
 
 int Mandelbrot::maxIterations() const
 {
-    return m_maxIterations;
+    return m_parameters.maxIterations;
 }
 
 void Mandelbrot::setMaxIterations(int newMaxIterations)
 {
-    if (m_maxIterations == newMaxIterations)
+    if (m_parameters.maxIterations == newMaxIterations)
         return;
-    m_maxIterations = newMaxIterations;
+    m_parameters.maxIterations = newMaxIterations;
     emit maxIterationsChanged();
     startRendering();
 }
 
 void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
 {
-    // Make constant copies of parameters to avoid passing pointer of this
-    // to concurrent lambda
-    const int imageWidth{m_imageWidth};
-    const int imageHeight{m_imageHeight};
-    const double centerRe{m_centerRe};
-    const double centerIm{m_centerIm};
-    // Normalize zoom to make it render width independent
-    const double zoom{(m_imageWidth / 8.0) * (m_zoom / 100.0)};
-    const int maxIterations{m_maxIterations};
+    // Make constant copy of parameters to avoid passing pointer of this
+    const Parameters parameters{m_parameters};
+
+    double centerX{static_cast<double>(parameters.imageWidth) / 2.0};
+    double centerY{static_cast<double>(parameters.imageHeight) / 2.0};
+
+    // Normalize zoom to a scale independent of the imageWidth of the image size
+    const double normalizedZoom{(parameters.imageWidth / 8.0) * (parameters.zoom / 100.0)};
 
     // Pixel format must be of 32 bits to ensure aligning of rows
-    QImage image{imageWidth, imageHeight, QImage::Format_ARGB32};
+    QImage image{parameters.imageWidth, parameters.imageHeight, QImage::Format_ARGB32};
     QRgb *pixels{reinterpret_cast<QRgb *>(image.bits())};
-
-    double centerX{static_cast<double>(imageWidth) / 2.0};
-    double centerY{static_cast<double>(imageHeight) / 2.0};
-
-    std::complex<double> center{centerRe, centerIm};
 
     // Make a list of row indeces to map across threads
     // size of image is not known at compile time so it this list must be dynamic
     QList<int> rowIndices;
-    rowIndices.reserve(imageHeight);
-    for (int i{}; i < imageHeight; ++i) {
+    rowIndices.reserve(parameters.imageHeight);
+    for (int i{}; i < parameters.imageHeight; ++i) {
         rowIndices.append(i);
     }
 
@@ -146,16 +140,18 @@ void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
         if (promise.isCanceled()) {
             return;
         }
-        QRgb *row{pixels + (pixelY * imageWidth)};
-        for (int pixelX{}; pixelX < imageWidth; ++pixelX) {
-            double zRe{static_cast<double>(pixelX - centerX) / zoom};
-            double zIm{static_cast<double>(pixelY - centerY) / zoom};
-            std::complex<double> z0{zRe + center.real(), zIm - center.imag()};
 
-            int iters{escapeTimeIterations(z0, maxIterations)};
+        QRgb *row{pixels + (pixelY * parameters.imageWidth)};
+        for (int pixelX{}; pixelX < parameters.imageWidth; ++pixelX) {
+            double zRe{static_cast<double>(pixelX - centerX) / normalizedZoom};
+            double zIm{static_cast<double>(pixelY - centerY) / normalizedZoom};
+            std::complex<double> z0{zRe + parameters.centerRe, zIm - parameters.centerIm};
 
-            if (iters < maxIterations) {
-                int h{static_cast<int>(std::pow(360.0 * iters / maxIterations, 1.5)) % 360};
+            int iters{escapeTimeIterations(z0, parameters.maxIterations)};
+
+            if (iters < parameters.maxIterations) {
+                int h{static_cast<int>(std::pow(360.0 * iters / parameters.maxIterations, 1.5))
+                      % 360};
                 int s{255}; // 100%
                 int l{static_cast<int>(100)};
                 QColor color{QColor::fromHsl(h, s, l)};
@@ -173,7 +169,8 @@ void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
 
 void Mandelbrot::startRendering()
 {
-    if (m_imageWidth == 0 || m_imageHeight == 0 || m_zoom == 0 || m_maxIterations == 0) {
+    if (m_parameters.imageWidth == 0 || m_parameters.imageHeight == 0 || m_parameters.zoom == 0
+        || m_parameters.maxIterations == 0) {
         return;
     }
 
@@ -203,7 +200,7 @@ QSGNode *Mandelbrot::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
         node = new QSGSimpleTextureNode();
     }
 
-    if (m_imageWidth <= 0 || m_imageHeight <= 0) {
+    if (m_parameters.imageWidth <= 0 || m_parameters.imageHeight <= 0) {
         return node;
     }
 

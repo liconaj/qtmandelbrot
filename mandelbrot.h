@@ -8,8 +8,8 @@ namespace mb {
 
 struct Parameters
 {
-    unsigned int width;
-    unsigned int height;
+    int imageWidth;
+    int imageHeight;
     double centerRe;
     double centerIm;
     double zoom;
@@ -67,12 +67,7 @@ signals:
 private:
     void renderOnCpu(QPromise<QImage> &promise);
 
-    int m_imageWidth;
-    int m_imageHeight;
-    double m_centerRe;
-    double m_centerIm;
-    double m_zoom;
-    int m_maxIterations;
+    Parameters m_parameters;
 
     QFutureWatcher<QImage> m_renderWatcher;
     QImage m_cpuImage;
