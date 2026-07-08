@@ -21,6 +21,57 @@ int escapeTimeIterations(std::complex<double> z0, int maxIterations)
     return iterations;
 }
 
+void renderImage(QPromise<QImage> &promise, const Parameters parameters)
+{
+    double centerX{static_cast<double>(parameters.imageWidth) / 2.0};
+    double centerY{static_cast<double>(parameters.imageHeight) / 2.0};
+
+    // Normalize zoom to a scale independent of the imageWidth of the image size
+    const double normalizedZoom{(parameters.imageWidth / 8.0) * (parameters.zoom / 100.0)};
+
+    // Pixel format must be of 32 bits to ensure aligning of rows
+    QImage image{parameters.imageWidth, parameters.imageHeight, QImage::Format_ARGB32};
+    QRgb *pixels{reinterpret_cast<QRgb *>(image.bits())};
+
+    // Make a list of row indeces to map across threads
+    // size of image is not known at compile time so it this list must be dynamic
+    QList<int> rowIndices;
+    rowIndices.reserve(parameters.imageHeight);
+    for (int i{}; i < parameters.imageHeight; ++i) {
+        rowIndices.append(i);
+    }
+
+    QtConcurrent::blockingMap(rowIndices, [=, &promise](int pixelY) {
+        if (promise.isCanceled()) {
+            return;
+        }
+
+        QRgb *row{pixels + (pixelY * parameters.imageWidth)};
+        for (int pixelX{}; pixelX < parameters.imageWidth; ++pixelX) {
+            double zRe{static_cast<double>(pixelX - centerX) / normalizedZoom};
+            double zIm{static_cast<double>(pixelY - centerY) / normalizedZoom};
+            std::complex<double> z0{zRe + parameters.centerRe, zIm - parameters.centerIm};
+
+            int iters{escapeTimeIterations(z0, parameters.maxIterations)};
+
+            if (iters < parameters.maxIterations) {
+                int h{static_cast<int>(std::pow(360.0 * iters / parameters.maxIterations, 1.5))
+                      % 360};
+                int s{255}; // 100%
+                int l{static_cast<int>(100)};
+                QColor color{QColor::fromHsl(h, s, l)};
+                row[pixelX] = color.rgba();
+            } else {
+                row[pixelX] = qRgb(0, 0, 0);
+            }
+        }
+    });
+
+    if (!promise.isCanceled()) {
+        promise.addResult(image);
+    }
+}
+
 } // namespace
 
 Mandelbrot::Mandelbrot(QQuickItem *parent)
@@ -113,60 +164,6 @@ void Mandelbrot::setMaxIterations(int newMaxIterations)
     requestRender();
 }
 
-void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
-{
-    // Make constant copy of parameters to avoid passing pointer of this
-    const Parameters parameters{m_parameters};
-
-    double centerX{static_cast<double>(parameters.imageWidth) / 2.0};
-    double centerY{static_cast<double>(parameters.imageHeight) / 2.0};
-
-    // Normalize zoom to a scale independent of the imageWidth of the image size
-    const double normalizedZoom{(parameters.imageWidth / 8.0) * (parameters.zoom / 100.0)};
-
-    // Pixel format must be of 32 bits to ensure aligning of rows
-    QImage image{parameters.imageWidth, parameters.imageHeight, QImage::Format_ARGB32};
-    QRgb *pixels{reinterpret_cast<QRgb *>(image.bits())};
-
-    // Make a list of row indeces to map across threads
-    // size of image is not known at compile time so it this list must be dynamic
-    QList<int> rowIndices;
-    rowIndices.reserve(parameters.imageHeight);
-    for (int i{}; i < parameters.imageHeight; ++i) {
-        rowIndices.append(i);
-    }
-
-    QtConcurrent::blockingMap(rowIndices, [=, &promise](int pixelY) {
-        if (promise.isCanceled()) {
-            return;
-        }
-
-        QRgb *row{pixels + (pixelY * parameters.imageWidth)};
-        for (int pixelX{}; pixelX < parameters.imageWidth; ++pixelX) {
-            double zRe{static_cast<double>(pixelX - centerX) / normalizedZoom};
-            double zIm{static_cast<double>(pixelY - centerY) / normalizedZoom};
-            std::complex<double> z0{zRe + parameters.centerRe, zIm - parameters.centerIm};
-
-            int iters{escapeTimeIterations(z0, parameters.maxIterations)};
-
-            if (iters < parameters.maxIterations) {
-                int h{static_cast<int>(std::pow(360.0 * iters / parameters.maxIterations, 1.5))
-                      % 360};
-                int s{255}; // 100%
-                int l{static_cast<int>(100)};
-                QColor color{QColor::fromHsl(h, s, l)};
-                row[pixelX] = color.rgba();
-            } else {
-                row[pixelX] = qRgb(0, 0, 0);
-            }
-        }
-    });
-
-    if (!promise.isCanceled()) {
-        promise.addResult(image);
-    }
-}
-
 void Mandelbrot::requestRender()
 {
     if (m_parameters.imageWidth == 0 || m_parameters.imageHeight == 0 || m_parameters.zoom == 0
@@ -189,7 +186,7 @@ void Mandelbrot::requestRender()
         }
     });
 
-    QFuture<QImage> future{QtConcurrent::run(&Mandelbrot::renderOnCpu, this)};
+    QFuture<QImage> future{QtConcurrent::run(renderImage, m_parameters)};
     m_renderWatcher.setFuture(future);
 }
 
