@@ -48,9 +48,6 @@ public:
     int maxIterations() const;
     void setMaxIterations(int newMaxIterations);
 
-    Q_INVOKABLE
-    void startRendering();
-
 signals:
     void imageWidthChanged();
 
@@ -65,6 +62,7 @@ signals:
     void maxIterationsChanged();
 
 private:
+    void requestRender();
     void renderOnCpu(QPromise<QImage> &promise);
 
     Parameters m_parameters;

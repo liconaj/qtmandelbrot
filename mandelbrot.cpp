@@ -40,7 +40,7 @@ void Mandelbrot::setImageWidth(int newImageWidth)
         return;
     m_parameters.imageWidth = newImageWidth;
     emit imageWidthChanged();
-    startRendering();
+    requestRender();
 }
 
 int Mandelbrot::imageHeight() const
@@ -54,7 +54,7 @@ void Mandelbrot::setImageHeight(int newImageHeight)
         return;
     m_parameters.imageHeight = newImageHeight;
     emit imageHeightChanged();
-    startRendering();
+    requestRender();
 }
 
 double Mandelbrot::centerRe() const
@@ -68,7 +68,7 @@ void Mandelbrot::setCenterRe(double newCenterRe)
         return;
     m_parameters.centerRe = newCenterRe;
     emit centerReChanged();
-    startRendering();
+    requestRender();
 }
 
 double Mandelbrot::centerIm() const
@@ -82,7 +82,7 @@ void Mandelbrot::setCenterIm(double newCenterIm)
         return;
     m_parameters.centerIm = newCenterIm;
     emit centerImChanged();
-    startRendering();
+    requestRender();
 }
 
 double Mandelbrot::zoom() const
@@ -96,7 +96,7 @@ void Mandelbrot::setZoom(double newZoom)
         return;
     m_parameters.zoom = newZoom;
     emit zoomChanged();
-    startRendering();
+    requestRender();
 }
 
 int Mandelbrot::maxIterations() const
@@ -110,7 +110,7 @@ void Mandelbrot::setMaxIterations(int newMaxIterations)
         return;
     m_parameters.maxIterations = newMaxIterations;
     emit maxIterationsChanged();
-    startRendering();
+    requestRender();
 }
 
 void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
@@ -167,7 +167,7 @@ void Mandelbrot::renderOnCpu(QPromise<QImage> &promise)
     }
 }
 
-void Mandelbrot::startRendering()
+void Mandelbrot::requestRender()
 {
     if (m_parameters.imageWidth == 0 || m_parameters.imageHeight == 0 || m_parameters.zoom == 0
         || m_parameters.maxIterations == 0) {
