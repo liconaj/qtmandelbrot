@@ -15,6 +15,13 @@ struct Parameters
     int maxIterations;
 };
 
+struct IterationHistogram
+{
+    int total;
+    QVector<int> frequencies;
+    QVector<int> cumulativeFrequencies;
+};
+
 class IterationBuffer
 {
 public:
@@ -103,10 +110,9 @@ private:
 
     bool canRequestRender();
 
-    IterationBuffer m_iterationBuffer;
     Parameters m_parameters;
 
-    QFutureWatcher<IterationBuffer> m_computeWatcher;
+    QFutureWatcher<IterationBuffer> m_computeIterationsWatcher;
     QImage m_image;
 
     QSize m_imageSize;

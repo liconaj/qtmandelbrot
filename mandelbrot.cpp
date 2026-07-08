@@ -62,7 +62,32 @@ void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &par
     }
 }
 
-QImage renderImage(const IterationBuffer &buffer)
+IterationHistogram computeHistogram(const IterationBuffer &iterationBuffer)
+{
+    int total{};
+    QVector<int> frequencies(iterationBuffer.maxIterations());
+    QVector<int> cumulativeFrequencies(iterationBuffer.maxIterations());
+
+    for (const int &it : iterationBuffer) {
+        if (it < iterationBuffer.maxIterations()) {
+            ++frequencies[it];
+            ++total;
+        }
+    }
+
+    for (int i{}; i < frequencies.count(); ++i) {
+        cumulativeFrequencies[i] = frequencies[i];
+        if (i > 0) {
+            cumulativeFrequencies[i] += frequencies[i - 1];
+        }
+    }
+
+    return {.total = total,
+            .frequencies = frequencies,
+            .cumulativeFrequencies = cumulativeFrequencies};
+}
+
+QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &histogram)
 {
     // Pixel format must be of 32 bits to ensure aligning of rows
     QImage image{buffer.width(), buffer.height(), QImage::Format_ARGB32};
@@ -72,9 +97,10 @@ QImage renderImage(const IterationBuffer &buffer)
         const int iterations{buffer.at(i)};
 
         if (iterations < buffer.maxIterations()) {
-            int h{static_cast<int>(std::pow(360.0 * iterations / buffer.maxIterations(), 1.5))
-                  % 360};
-            int s{255}; // 100%
+            const double value{static_cast<double>(histogram.cumulativeFrequencies.at(iterations))
+                               / histogram.total};
+            int h{static_cast<int>(std::pow(360 * value, 1.5)) % 360};
+            int s{200};
             int l{static_cast<int>(100)};
             QColor color{QColor::fromHsl(h, s, l)};
             pixels[i] = color.rgba();
@@ -179,24 +205,25 @@ void Mandelbrot::requestRender()
         return;
     }
 
-    if (m_computeWatcher.isRunning()) {
-        m_computeWatcher.cancel();
+    if (m_computeIterationsWatcher.isRunning()) {
+        m_computeIterationsWatcher.cancel();
     }
     // Disconnect previous connections
-    m_computeWatcher.disconnect(this);
+    m_computeIterationsWatcher.disconnect(this);
 
     // Connect the watcher to trigger update() on the main thread
-    connect(&m_computeWatcher, &QFutureWatcher<void>::finished, this, [this]() {
+    connect(&m_computeIterationsWatcher, &QFutureWatcher<void>::finished, this, [this]() {
         // Only update if was not canceled
-        if (!m_computeWatcher.isCanceled()) {
-            m_iterationBuffer = m_computeWatcher.result();
-            m_image = renderImage(m_iterationBuffer);
+        if (!m_computeIterationsWatcher.isCanceled()) {
+            IterationBuffer iterationBuffer = m_computeIterationsWatcher.result();
+            IterationHistogram histogram = computeHistogram(iterationBuffer);
+            m_image = renderImage(iterationBuffer, histogram);
             update();
         }
     });
 
     QFuture<IterationBuffer> future{QtConcurrent::run(computeIterations, m_parameters)};
-    m_computeWatcher.setFuture(future);
+    m_computeIterationsWatcher.setFuture(future);
 }
 
 QSGNode *Mandelbrot::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
