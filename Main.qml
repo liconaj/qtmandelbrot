@@ -13,24 +13,13 @@ ApplicationWindow {
     title: qsTr("Mandelbrot Set Explorer")
 
     QtObject {
-       id: parameters
-       property int imageWidth
-       property int imageHeight
-       property double zoom
-       property double centerRe
-       property double centerIm
-       property int maxIterations
-
-       Component.onCompleted: reset()
-
-       function reset() {
-           zoom = 100;
-           imageWidth = 800;
-           imageHeight = 600;
-           centerRe = -0.5;
-           centerIm = 0;
-           maxIterations = 100;
-       }
+       id: defaultParameters
+       readonly property int imageWidth: 800
+       readonly property int imageHeight: 600
+       readonly property double centerRe: -0.5
+       readonly property double centerIm: 0
+       readonly property double zoom: 100
+       readonly property int maxIterations: 100
     }
 
     RowLayout {
@@ -50,12 +39,21 @@ ApplicationWindow {
                 visible: true
                 anchors.centerIn: parent
                 anchors.fill: parent
-                imageWidth: parameters.imageWidth
-                imageHeight: parameters.imageHeight
-                zoom: parameters.zoom
-                maxIterations: parameters.maxIterations
-                centerRe: parameters.centerRe
-                centerIm: parameters.centerIm
+                imageWidth: defaultParameters.imageWidth
+                imageHeight: defaultParameters.imageHeight
+                zoom: defaultParameters.zoom
+                maxIterations: defaultParameters.maxIterations
+                centerRe: defaultParameters.centerRe
+                centerIm: defaultParameters.centerIm
+
+                function reset() {
+                    imageWidth = defaultParameters.imageWidth
+                    imageHeight = defaultParameters.imageHeight
+                    zoom = defaultParameters.zoom
+                    maxIterations = defaultParameters.maxIterations
+                    centerRe = defaultParameters.centerRe
+                    centerIm = defaultParameters.centerIm
+                }
             }
         }
 
@@ -82,7 +80,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: parameters.imageWidth
+                        text: mandelbrot.imageWidth
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement1.width + 12
 
@@ -92,7 +90,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            parameters.imageWidth = parseInt(text)
+                            mandelbrot.imageWidth = parseInt(text)
                         }
 
                         Label {
@@ -115,7 +113,7 @@ ApplicationWindow {
 
                     TextField {
                         Layout.fillWidth: true
-                        text: parameters.imageHeight
+                        text: mandelbrot.imageHeight
                         horizontalAlignment: Qt.AlignHCenter
                         rightPadding: trailingElement2.width + 12
 
@@ -125,7 +123,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            parameters.imageHeight = parseInt(text)
+                            mandelbrot.imageHeight = parseInt(text)
                         }
 
                         Label {
@@ -151,17 +149,17 @@ ApplicationWindow {
                         Layout.fillWidth: true
 
                         from: 1
-                        value: parameters.maxIterations
+                        value: mandelbrot.maxIterations
                         to: 1500
                         stepSize: 1
 
-                        onMoved: parameters.maxIterations = value
+                        onMoved: mandelbrot.maxIterations = value
                     }
 
                     TextField {
                         Layout.preferredWidth: 48
                         Layout.fillWidth: false
-                        text: parameters.maxIterations
+                        text: mandelbrot.maxIterations
                         validator: IntValidator {
                             bottom: maxIterationsSlider.from
                             top: maxIterationsSlider.to
@@ -169,7 +167,7 @@ ApplicationWindow {
                         inputMethodHints: Qt.ImhDigitsOnly
                         onEditingFinished: {
                             if (text) {
-                                parameters.maxIterations = parseInt(text)
+                                mandelbrot.maxIterations = parseInt(text)
                             }
                         }
                     }
@@ -199,14 +197,14 @@ ApplicationWindow {
 
                         locale: Qt.locale("es_US")
                         from: -5.0
-                        value: parameters.centerRe
+                        value: mandelbrot.centerRe
                         to: 5.0
                         stepSize: 10 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
                         onValueModified: {
-                            parameters.centerRe = value
+                            mandelbrot.centerRe = value
                         }
                     }
 
@@ -225,14 +223,14 @@ ApplicationWindow {
 
                         locale: Qt.locale("es_US")
                         from: -5.0
-                        value: parameters.centerIm
+                        value: mandelbrot.centerIm
                         to: 5.0
                         stepSize: 10 / zoomSpinBox.value
                         editable: true
                         decimals: 9
 
                         onValueModified: {
-                            parameters.centerIm = value
+                            mandelbrot.centerIm = value
                         }
                     }
                 }
@@ -252,14 +250,14 @@ ApplicationWindow {
 
                         locale: Qt.locale("es_US")
                         from: 100
-                        value: parameters.zoom
+                        value: mandelbrot.zoom
                         to: 2.0e15
                         stepSize: 100
                         editable: true
                         decimals: 0
 
                         onValueModified: {
-                            parameters.zoom = value
+                            mandelbrot.zoom = value
                         }
                     }
                 }
@@ -272,7 +270,7 @@ ApplicationWindow {
                 Button {
                     Layout.fillWidth: true
                     text: "Reset parameters"
-                    onClicked: parameters.reset()
+                    onClicked: mandelbrot.reset()
                 }
             }
         }
