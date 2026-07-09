@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QColor>
 #include <QFutureWatcher>
 #include <QImage>
+#include <QList>
 #include <QQuickItem>
 
 namespace mb {
@@ -15,10 +17,12 @@ struct Parameters
     int maxIterations;
 };
 
+using Palette = QList<QColor>;
+
 struct EscapeResult
 {
     int iterations;
-    double smoothIterations;
+    double nu;
 };
 
 struct IterationHistogram

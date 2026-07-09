@@ -11,19 +11,60 @@ namespace mb {
 
 namespace {
 
+Palette generatePalette()
+{
+    QList<QColor> palette;
+    palette.reserve(255);
+    for (int i{}; i < 255; ++i) {
+        uchar r, g, b;
+        if (i < 32) {
+            r = i * 8;
+            g = i * 8;
+            b = 127 - i * 4;
+        } else if (i < 128) {
+            r = 255;
+            g = 255 - (i - 32) * 8 / 3;
+            b = (i - 32) * 4 / 3;
+        } else if (i < 192) {
+            r = 255 - (i - 128) * 4;
+            g = 0 + (i - 128) * 3;
+            b = 127 - (i - 128);
+        } else {
+            r = 0;
+            g = 192 - (i - 192) * 3;
+            b = 64 + (i - 192);
+        }
+        QColor color{QColor::fromRgb(r, g, b)};
+        palette.append(color);
+    }
+    return palette;
+}
+
+QColor interpolateColor(QColor color1, QColor color2, double factor)
+{
+    uchar r{static_cast<uchar>(color1.red() + factor * (color2.red() - color1.red()))};
+    uchar g{static_cast<uchar>(color1.green() + factor * (color2.green() - color1.green()))};
+    uchar b{static_cast<uchar>(color1.blue() + factor * (color2.blue() - color1.blue()))};
+
+    return QColor::fromRgb(r, g, b);
+}
+
 EscapeResult computeEscapeTimeIterations(std::complex<double> z0, int maxIterations)
 {
+    const int bailoutRadius{256};
     std::complex<double> z{z0};
     int iterations{};
-    double smoothIterations{-1};
-    while ((z.real() * z.real()) + (z.imag() * z.imag()) <= 4 && iterations < maxIterations) {
+    double nu{};
+
+    while ((z.real() * z.real()) + (z.imag() * z.imag()) <= (bailoutRadius * bailoutRadius)
+           && iterations < maxIterations) {
         z = (z * z) + z0;
         ++iterations;
     }
     if (iterations < maxIterations) {
-        smoothIterations = iterations + 1 - std::log(std::log(std::abs(z))) / std::log(2.0);
+        nu = iterations + 1 - std::log2(std::log(std::abs(z)));
     }
-    return {.iterations = iterations, .smoothIterations = smoothIterations};
+    return {.iterations = iterations, .nu = nu};
 }
 
 void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &parameters)
@@ -37,7 +78,7 @@ void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &par
     IterationBuffer iterationBuffer{parameters.imageSize, parameters.maxIterations};
 
     // Normalize zoom to a scale independent of the imageWidth of the image size
-    const double normalizedZoom{(imageWidth / 8.0) * (parameters.zoom / 100.0)};
+    const double normalizedZoom{(imageWidth / 5.0) * (parameters.zoom / 100.0)};
 
     // Make a list of row indeces to map across threads
     // size of image is not known at compile time so this list must be dynamic
@@ -92,7 +133,9 @@ IterationHistogram computeHistogram(const IterationBuffer &iterationBuffer)
             .cumulativeFrequencies = cumulativeFrequencies};
 }
 
-QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &histogram)
+QImage renderImage(const IterationBuffer &buffer,
+                   const IterationHistogram &histogram,
+                   const Palette &palette)
 {
     // Pixel format must be of 32 bits to ensure aligning of rows
     QImage image{buffer.width(), buffer.height(), QImage::Format_ARGB32};
@@ -102,13 +145,21 @@ QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &hist
         const EscapeResult escapeResult{buffer.at(i)};
 
         if (escapeResult.iterations < buffer.maxIterations()) {
-            const double value{
-                static_cast<double>(histogram.cumulativeFrequencies.at(escapeResult.iterations))
-                / histogram.total};
-            int h{static_cast<int>(std::pow(360 * value, 1.5)) % 360};
-            int s{200};
-            int l{static_cast<int>(100)};
-            QColor color{QColor::fromHsl(h, s, l)};
+            double density{1.0};
+            double scaledNu{escapeResult.nu * density};
+            int index{static_cast<int>(std::floor(scaledNu))};
+            if (index < 0) {
+                index = 0;
+            }
+
+            const int paletteIndex{static_cast<int>(index % palette.count())};
+            const int nextPaletteIndex{static_cast<int>((index + 1) % palette.count())};
+
+            const double smooth{scaledNu - std::floor(scaledNu)};
+
+            QColor color1{palette.at(paletteIndex)};
+            QColor color2{palette.at(nextPaletteIndex)};
+            QColor color = interpolateColor(color1, color2, smooth);
             pixels[i] = color.rgba();
         } else {
             pixels[i] = qRgb(0, 0, 0);
@@ -223,7 +274,8 @@ void Mandelbrot::requestRender()
         if (!m_computeIterationsWatcher.isCanceled()) {
             IterationBuffer iterationBuffer = m_computeIterationsWatcher.result();
             IterationHistogram histogram = computeHistogram(iterationBuffer);
-            m_image = renderImage(iterationBuffer, histogram);
+            Palette palette = generatePalette();
+            m_image = renderImage(iterationBuffer, histogram, palette);
             update();
         }
     });
