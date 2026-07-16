@@ -12,8 +12,6 @@ qt_standard_project_setup(REQUIRES 6.10)
 
 qt_add_executable(appqtmandelbrot
     main.cpp
-
-
 )
 
 qt_add_qml_module(appqtmandelbrot
@@ -46,4 +44,12 @@ install(TARGETS appqtmandelbrot
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+add_custom_target(copy_compile_commands ALL
+    COMMAND
+        "${CMAKE_COMMAND}" -E copy_if_different
+        "${PROJECT_BINARY_DIR}/compile_commands.json"
+        "${PROJECT_SOURCE_DIR}/compile_commands.json"
+    VERBATIM
 )
