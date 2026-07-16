@@ -83,3 +83,6 @@ CMakeLists.txt.user*
 /build*/
 /.qtcreator/
 .cache/
+
+compile_commands.json
+CMakeUserPresets.json
