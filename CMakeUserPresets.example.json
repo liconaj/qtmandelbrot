@@ -10,37 +10,148 @@
       "name": "base",
       "hidden": true,
       "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build/${presetName}"
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
+        "CMAKE_PREFIX_PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}"
+      }
     },
     {
-      "name": "qt6-macos",
+      "name": "base-windows",
       "inherits": "base",
-      "displayName": "Qt 6.11 MacOS AppleClang (Ninja Multi-Config)",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "/usr/bin/c++",
-        "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.11.1/macos",
-        "CMAKE_MAKE_PROGRAM": "$env{HOME}/Qt/Tools/Ninja/ninja"
+        "CMAKE_MAKE_PROGRAM": "$env{QT_ROOT}/Tools/Ninja/ninja.exe"
       },
-      "vendor": {
-        "qt.io/QtCreator/1.0": {
-          "AskBeforePresetsReload": true,
-          "AskReConfigureInitialParams": true,
-          "AutorunCMake": false,
-          "PackageManagerAutoSetup": false,
-          "ShowAdvancedOptionsByDefault": true,
-          "ShowSourceSubFolders": false,
-          "UseJunctionsForSourceAndBuildDirectories": true
-        }
+      "environment": {
+        "QT_ROOT": "C:/Qt",
+        "QT_VERSION": "6.11.1"
       },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
-        "rhs": "Darwin"
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "base-unix",
+      "inherits": "base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "$env{QT_ROOT}/Tools/Ninja/ninja"
+      },
+      "environment": {
+        "QT_ROOT": "$env{HOME}/Qt",
+        "QT_VERSION": "6.11.1"
+      },
+      "condition": {
+        "type": "inList",
+        "string": "${hostSystemName}",
+        "list": [
+          "Linux",
+          "Darwin"
+        ]
+      }
+    },
+    {
+      "name": "qt6-windows-msvc",
+      "inherits": "base-windows",
+      "displayName": "Qt 6.11.1 Windows MSVC 2026 x64 (Ninja Multi-Config)",
+      "environment": {
+        "QT_TOOLCHAIN": "msvc2022_64",
+        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin;$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      },
+      "toolset": {
+        "value": "v145,host=x64",
+        "strategy": "external"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "qt6-windows-mingw64",
+      "inherits": "base-windows",
+      "displayName": "Qt 6.11.1 Windows MinGW64 (Ninja Multi-Config)",
+      "environment": {
+        "QT_TOOLCHAIN": "mingw_64",
+        "QT_TOOL_COMPILER": "mingw1310_64",
+        "PATH": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin;$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin;$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin/c++.exe"
+      }
+    },
+    {
+      "name": "qt6-macos",
+      "inherits": "base-unix",
+      "displayName": "Qt 6.11.1 MacOS AppleClang (Ninja Multi-Config)",
+      "environment": {
+        "QT_TOOLCHAIN": "macos",
+        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin:$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "c++"
+      }
+    },
+    {
+      "name": "qt6-linux-gcc",
+      "inherits": "base-unix",
+      "displayName": "Qt 6.11.1 Linux GCC (Ninja Multi-Config)",
+      "environment": {
+        "QT_TOOLCHAIN": "gcc_64",
+        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin:$penv{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
       }
     }
   ],
   "buildPresets": [
+    {
+      "name": "qt6-windows-mingw64-debug",
+      "displayName": "Qt6 Windows MinGW64 - Debug",
+      "configurePreset": "qt6-windows-mingw64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "qt6-windows-mingw64-release",
+      "displayName": "Qt6 Windows MinGW64 - Release",
+      "configurePreset": "qt6-windows-mingw64",
+      "configuration": "Release"
+    },
+    {
+      "name": "qt6-windows-mingw64-relwithdebinfo",
+      "displayName": "Qt6 Windows MinGW64 - RelWithDebInfo",
+      "configurePreset": "qt6-windows-mingw64",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "qt6-windows-msvc-debug",
+      "displayName": "Qt6 Windows MSVC 2026 x64 - Debug",
+      "configurePreset": "qt6-windows-msvc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "qt6-windows-msvc-release",
+      "displayName": "Qt6 Windows MSVC 2026 x64 - Release",
+      "configurePreset": "qt6-windows-msvc",
+      "configuration": "Release"
+    },
+    {
+      "name": "qt6-windows-msvc-relwithdebinfo",
+      "displayName": "Qt6 Windows MSVC 2026 x64 - RelWithDebInfo",
+      "configurePreset": "qt6-windows-msvc",
+      "configuration": "RelWithDebInfo"
+    },
     {
       "name": "qt6-macos-debug",
       "displayName": "Qt6 MacOS AppleClang - Debug",
@@ -57,6 +168,24 @@
       "name": "qt6-macos-relwithdebinfo",
       "displayName": "Qt6 MacOS AppleClang - RelWithDebInfo",
       "configurePreset": "qt6-macos",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "qt6-linux-gcc-debug",
+      "displayName": "Qt6 Linux GCC - Debug",
+      "configurePreset": "qt6-linux-gcc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "qt6-linux-gcc-release",
+      "displayName": "Qt6 Linux GCC - Release",
+      "configurePreset": "qt6-linux-gcc",
+      "configuration": "Release"
+    },
+    {
+      "name": "qt6-linux-gcc-relwithdebinfo",
+      "displayName": "Qt6 Linux GCC - RelWithDebInfo",
+      "configurePreset": "qt6-linux-gcc",
       "configuration": "RelWithDebInfo"
     }
   ]
