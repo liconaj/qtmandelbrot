@@ -59,10 +59,10 @@
       "displayName": "Qt 6.11.1 Windows MSVC 2026 x64 (Ninja Multi-Config)",
       "environment": {
         "QT_TOOLCHAIN": "msvc2022_64",
-        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin;$penv{PATH}"
+        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin;$penv{PATH}",
+        "CC": "cl.exe"
       },
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_CXX_COMPILER": "cl.exe"
       },
       "toolset": {
@@ -81,11 +81,11 @@
       "environment": {
         "QT_TOOLCHAIN": "mingw_64",
         "QT_TOOL_COMPILER": "mingw1310_64",
-        "PATH": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin;$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin;$penv{PATH}"
+        "PATH": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin;$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin;$penv{PATH}",
+        "CC": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin/gcc.exe"
       },
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin/c++.exe"
+        "CMAKE_CXX_COMPILER": "$env{QT_ROOT}/Tools/$env{QT_TOOL_COMPILER}/bin/g++.exe"
       }
     },
     {
@@ -94,11 +94,11 @@
       "displayName": "Qt 6.11.1 MacOS AppleClang (Ninja Multi-Config)",
       "environment": {
         "QT_TOOLCHAIN": "macos",
-        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin:$penv{PATH}"
+        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin:$penv{PATH}",
+        "CC": "clang"
       },
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "c++"
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     },
     {
@@ -107,10 +107,10 @@
       "displayName": "Qt 6.11.1 Linux GCC (Ninja Multi-Config)",
       "environment": {
         "QT_TOOLCHAIN": "gcc_64",
-        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin:$penv{PATH}"
+        "PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}/bin:$penv{PATH}",
+        "CC": "gcc"
       },
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++"
       }
     }
