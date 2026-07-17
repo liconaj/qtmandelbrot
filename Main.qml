@@ -13,12 +13,12 @@ ApplicationWindow {
     title: qsTr("Mandelbrot Set Explorer")
 
     QtObject {
-       id: defaultParameters
-       readonly property size imageSize: Qt.size(800, 600)
-       readonly property double centerRe: -0.5
-       readonly property double centerIm: 0
-       readonly property double zoom: 100
-       readonly property int maxIterations: 100
+        id: defaultParameters
+        readonly property size imageSize: Qt.size(800, 600)
+        readonly property double centerRe: -0.5
+        readonly property double centerIm: 0
+        readonly property double zoom: 100
+        readonly property int maxIterations: 100
     }
 
     RowLayout {
@@ -45,11 +45,11 @@ ApplicationWindow {
                 centerIm: defaultParameters.centerIm
 
                 function reset() {
-                    imageSize = defaultParameters.imageSize
-                    zoom = defaultParameters.zoom
-                    maxIterations = defaultParameters.maxIterations
-                    centerRe = defaultParameters.centerRe
-                    centerIm = defaultParameters.centerIm
+                    imageSize = defaultParameters.imageSize;
+                    zoom = defaultParameters.zoom;
+                    maxIterations = defaultParameters.maxIterations;
+                    centerRe = defaultParameters.centerRe;
+                    centerIm = defaultParameters.centerIm;
                 }
             }
         }
@@ -87,7 +87,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            mandelbrot.imageSize.width = parseInt(text)
+                            mandelbrot.imageSize.width = parseInt(text);
                         }
 
                         Label {
@@ -120,7 +120,7 @@ ApplicationWindow {
                         }
 
                         onEditingFinished: {
-                            mandelbrot.imageSize.height = parseInt(text)
+                            mandelbrot.imageSize.height = parseInt(text);
                         }
 
                         Label {
@@ -164,7 +164,7 @@ ApplicationWindow {
                         inputMethodHints: Qt.ImhDigitsOnly
                         onEditingFinished: {
                             if (text) {
-                                mandelbrot.maxIterations = parseInt(text)
+                                mandelbrot.maxIterations = parseInt(text);
                             }
                         }
                     }
@@ -201,7 +201,7 @@ ApplicationWindow {
                         decimals: 9
 
                         onValueModified: {
-                            mandelbrot.centerRe = value
+                            mandelbrot.centerRe = value;
                         }
                     }
 
@@ -227,7 +227,7 @@ ApplicationWindow {
                         decimals: 9
 
                         onValueModified: {
-                            mandelbrot.centerIm = value
+                            mandelbrot.centerIm = value;
                         }
                     }
                 }
@@ -254,7 +254,7 @@ ApplicationWindow {
                         decimals: 0
 
                         onValueModified: {
-                            mandelbrot.zoom = value
+                            mandelbrot.zoom = value;
                         }
                     }
                 }
@@ -262,7 +262,6 @@ ApplicationWindow {
                 Item {
                     Layout.fillHeight: true
                 }
-
 
                 Button {
                     Layout.fillWidth: true
