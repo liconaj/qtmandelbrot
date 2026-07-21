@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 #include <QColor>
 #include <QFutureWatcher>
 #include <QImage>
@@ -18,12 +20,6 @@ struct Parameters
 };
 
 using Palette = QList<QColor>;
-
-struct EscapeResult
-{
-    int iterations;
-    double nu;
-};
 
 struct IterationHistogram
 {
@@ -51,11 +47,11 @@ public:
 
     std::size_t indexOf(int x, int y) const { return x + (m_imageSize.width() * y); }
 
-    EscapeResult &at(int index) { return m_buffer[index]; }
-    const EscapeResult &at(int index) const { return m_buffer[index]; }
+    EscapeTimeResult &at(int index) { return m_buffer[index]; }
+    const EscapeTimeResult &at(int index) const { return m_buffer[index]; }
 
-    EscapeResult &at(int x, int y) { return m_buffer[indexOf(x, y)]; }
-    const EscapeResult &at(int x, int y) const { return m_buffer[indexOf(x, y)]; }
+    EscapeTimeResult &at(int x, int y) { return m_buffer[indexOf(x, y)]; }
+    const EscapeTimeResult &at(int x, int y) const { return m_buffer[indexOf(x, y)]; }
 
     int maxIterations() const { return m_maxIterations; }
     void setMaxIterations(int newMaxIterations) { m_maxIterations = newMaxIterations; }
@@ -72,7 +68,7 @@ public:
 private:
     QSize m_imageSize;
 
-    QVector<EscapeResult> m_buffer;
+    QVector<EscapeTimeResult> m_buffer;
 
     int m_maxIterations;
 };

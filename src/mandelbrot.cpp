@@ -1,11 +1,11 @@
 #include "mandelbrot.h"
+#include "algorithms.h"
 
 #include <QList>
 #include <QSGSimpleTextureNode>
 #include <QSGTexture>
 #include <QtConcurrent>
 #include <cmath>
-#include <complex>
 
 namespace mb {
 
@@ -49,24 +49,6 @@ QColor interpolateColor(QColor color1, QColor color2, double factor)
     return QColor::fromRgb(r, g, b);
 }
 
-EscapeResult computeEscapeTimeIterations(std::complex<double> z0, int maxIterations)
-{
-    const int bailoutRadius{256};
-    std::complex<double> z{z0};
-    int iterations{};
-    double nu{};
-
-    while ((z.real() * z.real()) + (z.imag() * z.imag()) <= (bailoutRadius * bailoutRadius)
-           && iterations < maxIterations) {
-        z = (z * z) + z0;
-        ++iterations;
-    }
-    if (iterations < maxIterations) {
-        nu = iterations + 1 - std::log2(std::log(std::abs(z)));
-    }
-    return {.iterations = iterations, .nu = nu};
-}
-
 void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &parameters)
 {
     int imageWidth{parameters.imageSize.width()};
@@ -94,11 +76,11 @@ void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &par
         }
 
         for (int pixelX{}; pixelX < imageWidth; ++pixelX) {
-            double zRe{static_cast<double>(pixelX - centerX) / normalizedZoom};
-            double zIm{static_cast<double>(pixelY - centerY) / normalizedZoom};
-            std::complex<double> z0{zRe + parameters.centerRe, zIm - parameters.centerIm};
+            double cRe{static_cast<double>(pixelX - centerX) / normalizedZoom + parameters.centerRe};
+            double cIm{static_cast<double>(pixelY - centerY) / normalizedZoom - parameters.centerIm};
+            const int bailoutRadius = 256;
 
-            EscapeResult iters{computeEscapeTimeIterations(z0, parameters.maxIterations)};
+            EscapeTimeResult iters{computeEscapeTime(cRe, cIm, bailoutRadius, parameters.maxIterations)};
             iterationBuffer.at(pixelX, pixelY) = iters;
         }
     });
@@ -114,7 +96,7 @@ IterationHistogram computeHistogram(const IterationBuffer &iterationBuffer)
     QVector<int> frequencies(iterationBuffer.maxIterations());
     QVector<int> cumulativeFrequencies(iterationBuffer.maxIterations());
 
-    for (const EscapeResult &escapeResult : iterationBuffer) {
+    for (const EscapeTimeResult &escapeResult : iterationBuffer) {
         if (escapeResult.iterations < iterationBuffer.maxIterations()) {
             ++frequencies[escapeResult.iterations];
             ++total;
@@ -142,11 +124,15 @@ QImage renderImage(const IterationBuffer &buffer,
     QRgb *pixels{reinterpret_cast<QRgb *>(image.bits())};
 
     for (int i{}; i < buffer.size(); ++i) {
-        const EscapeResult escapeResult{buffer.at(i)};
+        const EscapeTimeResult escapeResult{buffer.at(i)};
 
         if (escapeResult.iterations < buffer.maxIterations()) {
             double density{1.0};
-            double scaledNu{escapeResult.nu * density};
+            Real nu = 0;
+            if (escapeResult.iterations < buffer.maxIterations()) {
+                nu = smoothIterationCount(escapeResult.iterations, escapeResult.magnitudeSquared);
+            }
+            double scaledNu{nu * density};
             int index{static_cast<int>(std::floor(scaledNu))};
             if (index < 0) {
                 index = 0;
