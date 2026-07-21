@@ -27,10 +27,13 @@ set_target_properties(appqtmandelbrot PROPERTIES
     WIN32_EXECUTABLE $<NOT:$<CONFIG:Debug>>
 )
 
+add_subdirectory(core)
+
 target_link_libraries(appqtmandelbrot
     PRIVATE
         Qt6::Quick
         Qt6::Concurrent
+        mandelbrot_core
 )
 
 install(TARGETS appqtmandelbrot
