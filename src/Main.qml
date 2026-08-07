@@ -5,7 +5,7 @@ import com.liconaj.qtmandelbrot
 
 ApplicationWindow {
     id: window
-    minimumWidth: 940
+    minimumWidth: 1010
     minimumHeight: 480
     width: minimumWidth
     height: minimumHeight
@@ -56,7 +56,7 @@ ApplicationWindow {
 
         Pane {
             padding: 28
-            Layout.preferredWidth: 300
+            Layout.preferredWidth: 350
             Layout.fillHeight: true
 
             focusPolicy: Qt.ClickFocus
