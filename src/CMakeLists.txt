@@ -2,7 +2,6 @@ qt_add_executable(appqtmandelbrot
     main.cpp
 )
 
-set(QT_QML_GENERATE_QMLLS_INI ON)
 qt_add_qml_module(appqtmandelbrot
     URI com.liconaj.qtmandelbrot
     QML_FILES
