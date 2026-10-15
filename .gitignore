@@ -90,3 +90,8 @@ CMakeUserPresets.json
 /.idea/
 /.vscode/
 /.zed/
+
+
+/docs/*.pdf
+/guide/
+TODO.md
