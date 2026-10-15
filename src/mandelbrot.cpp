@@ -153,6 +153,7 @@ QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &hist
 
 Mandelbrot::Mandelbrot(QQuickItem *parent)
     : QQuickItem(parent)
+    , m_palette{generatePalette()}
 {
     setFlag(QQuickItem::ItemHasContents);
 }
@@ -254,8 +255,7 @@ void Mandelbrot::requestRender()
         if (!m_computeIterationsWatcher.isCanceled()) {
             IterationBuffer iterationBuffer = m_computeIterationsWatcher.result();
             IterationHistogram histogram = computeHistogram(iterationBuffer);
-            Palette palette = generatePalette();
-            m_image = renderImage(iterationBuffer, histogram, palette);
+            m_image = renderImage(iterationBuffer, histogram, m_palette);
             update();
         }
     });
