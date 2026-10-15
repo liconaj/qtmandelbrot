@@ -13,6 +13,8 @@ namespace mb {
 
 namespace {
 
+constexpr int defaultBailoutRadius = 256;
+
 Palette generatePalette()
 {
     QList<QColor> palette;
@@ -80,9 +82,8 @@ void computeIterations(QPromise<IterationBuffer> &promise, const Parameters &par
         for (int pixelX{}; pixelX < imageWidth; ++pixelX) {
             double cRe{static_cast<double>(pixelX - centerX) / normalizedZoom + parameters.centerRe};
             double cIm{static_cast<double>(pixelY - centerY) / normalizedZoom - parameters.centerIm};
-            const int bailoutRadius = 256;
 
-            EscapeTimeResult iters{computeEscapeTime(cRe, cIm, bailoutRadius, parameters.maxIterations)};
+            EscapeTimeResult iters{computeEscapeTime(cRe, cIm, defaultBailoutRadius, parameters.maxIterations)};
             iterationBuffer.at(pixelX, pixelY) = iters;
         }
     });
