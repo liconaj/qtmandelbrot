@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Fusion
-import com.liconaj.qtmandelbrot
 
 ApplicationWindow {
     id: window
