@@ -1,7 +1,5 @@
 #include <QTest>
 
-#include <qtestcase.h>
-
 class tst_Sanity : public QObject
 {
     Q_OBJECT
