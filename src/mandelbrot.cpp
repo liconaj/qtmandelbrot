@@ -125,13 +125,8 @@ QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &hist
         const EscapeTimeResult escapeResult{buffer.at(i)};
 
         if (escapeResult.iterations < buffer.maxIterations()) {
-            double density{1.0};
-            Real nu = 0;
-            if (escapeResult.iterations < buffer.maxIterations()) {
-                nu = smoothIterationCount(escapeResult.iterations, escapeResult.magnitudeSquared);
-            }
-            double scaledNu{nu * density};
-            int index{static_cast<int>(std::floor(scaledNu))};
+            Real nu = smoothIterationCount(escapeResult.iterations, escapeResult.magnitudeSquared);
+            int index{static_cast<int>(std::floor(nu))};
             if (index < 0) {
                 index = 0;
             }
@@ -139,7 +134,7 @@ QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &hist
             const int paletteIndex{static_cast<int>(index % palette.count())};
             const int nextPaletteIndex{static_cast<int>((index + 1) % palette.count())};
 
-            const double smooth{scaledNu - std::floor(scaledNu)};
+            const double smooth{nu - std::floor(nu)};
 
             QColor color1{palette.at(paletteIndex)};
             QColor color2{palette.at(nextPaletteIndex)};
