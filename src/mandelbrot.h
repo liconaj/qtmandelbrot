@@ -122,8 +122,6 @@ private:
     QFutureWatcher<IterationBuffer> m_computeIterationsWatcher;
     QImage m_image;
 
-    QSize m_imageSize;
-
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
 };
