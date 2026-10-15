@@ -12,6 +12,7 @@
       "generator": "Ninja Multi-Config",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
+        "BUILD_TESTING": false,
         "CMAKE_CONFIGURATION_TYPES": "Debug;Release;RelWithDebInfo",
         "CMAKE_PREFIX_PATH": "$env{QT_ROOT}/$env{QT_VERSION}/$env{QT_TOOLCHAIN}"
       }
