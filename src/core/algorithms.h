@@ -22,7 +22,6 @@ namespace mb {
  */
 EscapeTimeResult computeEscapeTime(Real re, Real im, int bailoutRadius, int maxIterations);
 
-
 /**
  * @brief Computes the smooth iteration count for continuous Mandelbrot coloring.
  *
@@ -39,4 +38,4 @@ EscapeTimeResult computeEscapeTime(Real re, Real im, int bailoutRadius, int maxI
  */
 Real smoothIterationCount(int iterations, Real magnitudeSquared);
 
-}
+} // namespace mb

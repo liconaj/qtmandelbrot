@@ -81,8 +81,7 @@ class Mandelbrot : public QQuickItem
     Q_PROPERTY(double centerRe READ centerRe WRITE setCenterRe NOTIFY centerReChanged FINAL)
     Q_PROPERTY(double centerIm READ centerIm WRITE setCenterIm NOTIFY centerImChanged FINAL)
     Q_PROPERTY(double zoom READ zoom WRITE setZoom NOTIFY zoomChanged FINAL)
-    Q_PROPERTY(int maxIterations READ maxIterations WRITE setMaxIterations NOTIFY
-                   maxIterationsChanged FINAL)
+    Q_PROPERTY(int maxIterations READ maxIterations WRITE setMaxIterations NOTIFY maxIterationsChanged FINAL)
 public:
     explicit Mandelbrot(QQuickItem *parent = nullptr);
 

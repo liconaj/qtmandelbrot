@@ -10,4 +10,4 @@ struct EscapeTimeResult
     Real magnitudeSquared;
 };
 
-}
+} // namespace mb

@@ -1,10 +1,12 @@
 #include "mandelbrot.h"
+
 #include "algorithms.h"
 
 #include <QList>
 #include <QSGSimpleTextureNode>
 #include <QSGTexture>
 #include <QtConcurrent>
+
 #include <cmath>
 
 namespace mb {
@@ -110,14 +112,10 @@ IterationHistogram computeHistogram(const IterationBuffer &iterationBuffer)
         }
     }
 
-    return {.total = total,
-            .frequencies = frequencies,
-            .cumulativeFrequencies = cumulativeFrequencies};
+    return {.total = total, .frequencies = frequencies, .cumulativeFrequencies = cumulativeFrequencies};
 }
 
-QImage renderImage(const IterationBuffer &buffer,
-                   const IterationHistogram &histogram,
-                   const Palette &palette)
+QImage renderImage(const IterationBuffer &buffer, const IterationHistogram &histogram, const Palette &palette)
 {
     // Pixel format must be of 32 bits to ensure aligning of rows
     QImage image{buffer.width(), buffer.height(), QImage::Format_ARGB32};

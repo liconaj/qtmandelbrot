@@ -33,4 +33,4 @@ Real smoothIterationCount(const int iterations, const Real magnitudeSquared)
     return nu;
 }
 
-}
+} // namespace mb
