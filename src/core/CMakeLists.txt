@@ -3,6 +3,8 @@ add_library(mandelbrot_core
         numeric.h
         algorithms.h
         algorithms.cpp
+        viewport.h
+        viewport.cpp
 )
 
 target_include_directories(mandelbrot_core
