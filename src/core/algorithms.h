@@ -1,8 +1,17 @@
 #pragma once
 
-#include "types.h"
+#include "numeric.h"
 
 namespace mb {
+
+/**
+ * Result of scape time algorith
+ */
+struct EscapeTimeResult
+{
+    int iterations;
+    Real magnitudeSquared;
+};
 
 /**
  * @brief Computed the scape time of a point in the Mandelbrot set.
@@ -11,8 +20,8 @@ namespace mb {
  * c = (cRe, cIm). Iteration stops when |z| exceed the bailout radious or the
  * maximum number of iterations is reached.
  *
- * @param cRe Real part of the complex coordinate
- * @param cIm Imaginary part of the complex coordinate
+ * @param re Real part of the complex coordinate
+ * @param im Imaginary part of the complex coordinate
  * @param bailoutRadius Escape radius. Must be greater than zero.
  * @param maxIterations Maximum number of iteratios to perform.
  * @return An EscapeTimeResult containing.

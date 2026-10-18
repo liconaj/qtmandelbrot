@@ -1,6 +1,6 @@
 add_library(mandelbrot_core
     STATIC
-        types.h
+        numeric.h
         algorithms.h
         algorithms.cpp
 )

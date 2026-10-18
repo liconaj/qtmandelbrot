@@ -1,5 +1,5 @@
 #include "algorithms.h"
-#include "types.h"
+#include "numeric.h"
 
 #include <QTest>
 
