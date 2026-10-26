@@ -9,6 +9,10 @@ struct PixelPoint
     Real x;
     Real y;
 
+    constexpr explicit PixelPoint(Real x_, Real y_)
+        : x{x_}
+        , y{y_} {};
+
     bool operator==(const PixelPoint &) const = default;
 };
 
@@ -16,6 +20,10 @@ struct PlanePoint
 {
     Real re;
     Real im;
+
+    constexpr explicit PlanePoint(Real re_, Real im_)
+        : re{re_}
+        , im{im_} {};
 
     bool operator==(const PlanePoint &) const = default;
 };
@@ -26,6 +34,12 @@ struct Viewport
     Real scale;
     int width;
     int height;
+
+    constexpr explicit Viewport(PlanePoint center_, Real scale_, int width_, int height_)
+        : center{center_}
+        , scale{scale_}
+        , width{width_}
+        , height{height_} {};
 
     bool operator==(const Viewport &) const = default;
 };
@@ -49,5 +63,15 @@ PlanePoint pixelToPlane(const Viewport &viewport, PixelPoint pixel);
  */
 [[nodiscard]]
 PixelPoint planeToPixel(const Viewport &viewport, PlanePoint point);
+
+/**
+ * @brief Checks whether a viewport has valid parameters
+ *
+ * @param viewport
+ * @return true
+ * @return false
+ */
+[[nodiscard]]
+bool isValid(const Viewport &viewport);
 
 } // namespace mb

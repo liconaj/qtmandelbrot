@@ -22,3 +22,14 @@ mb::PixelPoint mb::planeToPixel(const Viewport &viewport, PlanePoint point)
 
     return pixelPoint;
 }
+
+bool mb::isValid(const Viewport &viewport)
+{
+    if (viewport.scale <= 0) {
+        return false;
+    }
+    if (viewport.width <= 0 || viewport.height <= 0) {
+        return false;
+    }
+    return true;
+}
