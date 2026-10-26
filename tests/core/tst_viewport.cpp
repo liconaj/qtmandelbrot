@@ -4,7 +4,7 @@
 
 namespace {
 constexpr mb::PlanePoint center{-0.5, 0.0};
-constexpr mb::Viewport viewport{.center = center, .scale = 0.05, .width = 800, .height = 600};
+constexpr mb::Viewport viewport{center, 0.05, 800, 600};
 
 constexpr double epsilon{1e-9};
 } // namespace
@@ -24,6 +24,9 @@ private slots:
 
     void planeToPixelRoundTrip_data();
     void planeToPixelRoundTrip();
+
+    void isValid_data();
+    void isValid();
 };
 
 void tst_Viewport::pixelToPlane_data()
@@ -136,6 +139,35 @@ void tst_Viewport::planeToPixelRoundTrip()
 
     QCOMPARE_LT(qAbs(result.re - original.re), epsilon * viewport.scale);
     QCOMPARE_LT(qAbs(result.im - original.im), epsilon * viewport.scale);
+}
+
+void tst_Viewport::isValid_data()
+{
+    QTest::addColumn<mb::Viewport>("viewport");
+    QTest::addColumn<bool>("isValid");
+
+    QTest::newRow("default viewport is valid") << viewport << true;
+    QTest::newRow("viewport with scale equal to zero is invalid")
+        << mb::Viewport{viewport.center, 0.0, viewport.width, viewport.height} << false;
+    QTest::newRow("viewport with negative scale is invalid")
+        << mb::Viewport{viewport.center, -1.0, viewport.width, viewport.height} << false;
+    QTest::newRow("viewport with width equal to zero is invalid")
+        << mb::Viewport{viewport.center, viewport.scale, 0, viewport.height} << false;
+    QTest::newRow("viewport with negative width is invalid")
+        << mb::Viewport{viewport.center, viewport.scale, -viewport.width, viewport.height} << false;
+    QTest::newRow("viewport with height equal to zero is invalid")
+        << mb::Viewport{viewport.center, viewport.scale, viewport.width, 0} << false;
+    QTest::newRow("viewport with negative height is invalid")
+        << mb::Viewport{viewport.center, viewport.scale, viewport.width, -viewport.height} << false;
+}
+
+void tst_Viewport::isValid()
+{
+    QFETCH(mb::Viewport, viewport);
+    QFETCH(bool, isValid);
+
+    bool result{mb::isValid(viewport)};
+    QCOMPARE(result, isValid);
 }
 
 QTEST_MAIN(tst_Viewport)
