@@ -1,7 +1,5 @@
 #include "mandelbrot.h"
 
-#include "algorithms.h"
-
 #include <QList>
 #include <QSGSimpleTextureNode>
 #include <QSGTexture>

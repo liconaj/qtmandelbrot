@@ -1,6 +1,6 @@
 #pragma once
 
-#include "algorithms.h"
+#include "escapetime.h"
 
 #include <QColor>
 #include <QFutureWatcher>

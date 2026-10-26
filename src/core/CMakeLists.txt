@@ -1,8 +1,8 @@
 add_library(mandelbrot_core
     STATIC
         numeric.h
-        algorithms.h
-        algorithms.cpp
+        escapetime.h
+        escapetime.cpp
         viewport.h
         viewport.cpp
 )
